@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SafarX — Explore • Plan • Experience</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <!-- model-viewer for 3D/AR previews -->
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  
+<!-- AR/VR model-viewer
+<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script> -->
+
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-row">
+      <div class="brand">    
+        <div class="logo">SX</div>
+        <div class="brand-text">
+          <h1>SafarX</h1>
+          <small>Explore • Plan • Experience</small>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <button class="icon-btn" id="btn-trip" title="Trip Manager" aria-label="Open Trip Manager">
+          <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zM4 10h10v2H4zM4 14h7v2H4z"/></svg>
+        </button>
+
+        <button class="icon-btn" id="btn-3d" title="AR / VR preview" aria-label="Open 3D preview">
+          <svg viewBox="0 0 24 24"><path d="M3 7.5l9-4 9 4v9l-9 4-9-4v-9z"/></svg>
+        </button>
+
+        <button class="btn primary" id="open-auth">Guide Login</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-left">
+        <p class="kicker">Travel & Tourism</p>
+        <h2>Travel deeper with local guides. Plan smarter with SafarX.</h2>
+        <p class="muted">Search destinations, chat with our assistant, register as a guide, preview rooms in 3D and manage budgets & itinerary — all in one lightweight demo.</p>
+
+        <div class="search-card">
+          <input id="where" class="input" placeholder="Destination (e.g., Munnar)" />
+          <div class="date-row">
+            <input id="from" type="date" class="input" />
+            <input id="to" type="date" class="input" />
+          </div>
+          <div class="actions">
+            <button class="btn" id="searchBtn">Search</button>
+            <button class="btn" id="open-chat">AI Chat</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-right">
+        <div class="featured-card">
+          <!-- <img src="assets/images/sample.jpg" alt="Featured stay" /> -->
+           <video width="320" height="240" controls autoplay muted loop >
+  <source src="3d1.mp4" type="video/mp4">
+  <!-- <source src="movie.ogg" type="video/ogg"> audio store -->
+Your browser does not support the video tag.
+</video>
+          <div class="card-body">
+            <h3>Valley View Suite</h3>
+            <p class="muted">Warm minimal room with panoramic views.</p>
+            <div class="card-actions">
+              <button class="btn" id="view-3d-hero">View in 3D</button>
+              <button class="btn outline" id="add-to-trip-hero">Add to Trip</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CARDS -->
+    <section class="grid-section">
+      <h3>Popular Destinations</h3>
+      <div id="destGrid" class="cards"></div>
+    </section>
+
+    <section class="grid-section alt">
+      <h3>Rooms & Stays</h3>
+      <div id="roomGrid" class="cards"></div>
+    </section>
+
+    <section class="grid-section">
+      <h3>Local Guides</h3>
+      <div id="guideGrid" class="cards"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-row">
+      <small>© <span id="year"></span> SafarX — demo for travel experiences</small>
+      <small class="muted">Built for explorers</small>
+    </div>
+  </footer>
+
+  <!-- CHAT WIDGET (client demo) -->
+  <div id="chatWidget" class="chat-widget" aria-hidden="true">
+    <div class="chat-header">
+      <strong>SafarX Assistant</strong>
+      <div class="chat-controls">
+        <button class="icon-btn" id="minChat" title="Minimize">−</button>
+        <button class="icon-btn" id="closeChat" title="Close">×</button>
+      </div>
+    </div>
+    <div class="chat-body" id="chatBody">
+      <div class="msg bot">Hi! Ask me about destinations, budgets, or local tips.</div>
+    </div>
+    <div class="chat-input">
+      <input id="chatInput" placeholder="Try: '3-day Jaipur plan' or 'Budget 20k for Goa'">
+      <button class="btn primary" id="sendMsg">Send</button>
+    </div>
+  </div>
+  <button id="chatFab" class="fab" aria-label="Open chat">💬</button>
+
+  <!-- AUTH MODAL -->
+  <div id="authModal" class="modal" aria-hidden="true">
+    <div class="panel">
+      <header class="panel-header">
+        <strong>Local Guide — Register / Login</strong>
+        <button class="icon-btn" id="closeAuth">×</button>
+      </header>
+      <div class="panel-body">
+        <div class="auth-grid">
+          <div>
+            <h4>Create Account</h4>
+            <input id="regName" class="input" placeholder="Full name" />
+            <input id="regEmail" class="input" placeholder="Email" />
+            <input id="regPass" type="password" class="input" placeholder="Password" />
+            <input id="regCity" class="input" placeholder="City / Region" />
+            <input id="regLang" class="input" placeholder="Languages (comma separated)" />
+            <button class="btn primary" id="registerBtn">Register</button>
+          </div>
+          <div>
+            <h4>Login</h4>
+            <input id="logEmail" class="input" placeholder="Email" />
+            <input id="logPass" type="password" class="input" placeholder="Password" />
+            <button class="btn" id="loginBtn">Login</button>
+            <div id="authStatus" class="muted small"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3D ROOM PREVIEW -->
+  <div id="roomModal" class="modal modal-3d" aria-hidden="true">
+    <div class="panel wide">
+      <header class="panel-header">
+        <strong>Room 3D Preview</strong>
+        <button class="icon-btn" id="close3d">×</button>
+      </header>
+
+      <model-viewer id="roomViewer"
+        src="3d.jpg"
+        alt="3D room preview"
+        ar
+        ar-modes="webxr scene-viewer quick-look"
+        camera-controls
+        exposure="1"
+        shadow-intensity="1">
+      </model-viewer>
+
+      <div class="panel-body small">
+        <button class="btn" id="swap-min">Minimal</button>
+        <button class="btn" id="swap-suite">Suite</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRIP MANAGER -->
+  <div id="tripModal" class="modal" aria-hidden="true">
+    <div class="panel wide">
+      <header class="panel-header">
+        <strong>Trip Manager</strong>
+        <button class="icon-btn" id="closeTrip">×</button>
+      </header>
+      <div class="panel-body">
+        <div class="trip-grid">
+          <div class="trip-left">
+            <h4>Itinerary</h4>
+            <ul id="itinerary" class="itinerary"></ul>
+
+            <div class="add-row">
+              <input id="placeName" class="input" placeholder="Place / Activity" />
+              <input id="placeDay" type="number" class="input small" min="1" placeholder="Day" />
+              <button class="btn" id="addPlace">Add</button>
+            </div>
+          </div>
+
+          <div class="trip-right">
+            <h4>Budget Planner</h4>
+            <div class="budget-row">
+              <label>Target Budget (₹)</label>
+              <input id="targetBudget" type="number" class="input" placeholder="e.g., 20000" />
+            </div>
+            <div class="budget-row">
+              <label>Estimated Spent (₹)</label>
+              <input id="spentBudget" type="number" class="input" placeholder="0" />
+            </div>
+            <div class="budget-summary muted" id="budgetSummary">Remaining: —</div>
+            <div style="margin-top:10px; display:flex; gap:8px">
+              <button class="btn primary" id="saveTrip">Save Trip</button>
+              <button class="btn outline" id="clearTrip">Clear</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/script.js"></script>
+  
+</body>
+</html>
