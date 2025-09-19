@@ -1,0 +1,117 @@
+const express = require("express");
+const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const helmet = require("helmet");
+const cors = require("cors");
+const Web3 = require("web3");
+require("dotenv").config();
+
+const app = express();
+app.use(express.json());
+app.use(helmet());
+app.use(cors());
+
+// MongoDB connection
+mongoose.connect("mongodb://localhost:27017/travelApp", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+// User schema
+const userSchema = new mongoose.Schema({
+  name: String,
+  email: { type: String, unique: true },
+  password: String,
+  blockchainHash: String, // store blockchain reference
+});
+
+const User = mongoose.model("User", userSchema);
+
+// ✅ Blockchain setup
+const web3 = new Web3("http://127.0.0.1:7545"); // Ganache local blockchain
+const account = process.env.BLOCKCHAIN_ACCOUNT; // Your wallet from Ganache
+
+// Simple function to store hash on blockchain
+async function storeOnBlockchain(data) {
+  const hash = web3.utils.sha3(data); // Create unique hash of data
+
+  // Just send a dummy transaction with hash as data
+  await web3.eth.sendTransaction({
+    from: account,
+    to: account,
+    value: "0", // no money
+    data: hash,
+  });
+
+  return hash;
+}
+
+// 🔐 Register
+app.post("/register", async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Store user ID hash on blockchain
+    const blockchainHash = await storeOnBlockchain(email);
+
+    const newUser = new User({ name, email, password: hashedPassword, blockchainHash });
+    await newUser.save();
+
+    res.json({ message: "✅ User registered & verified on blockchain!", blockchainHash });
+  } catch (err) {
+    res.status(400).json({ error: "⚠️ Email already exists!" });
+  }
+});
+
+// 🔑 Login
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) return res.status(400).json({ error: "❌ User not found" });
+
+  const validPassword = await bcrypt.compare(password, user.password);
+  if (!validPassword) return res.status(400).json({ error: "❌ Wrong password" });
+
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+
+  res.json({ message: "✅ Login successful", token, blockchainHash: user.blockchainHash });
+});
+
+// 🔒 Protected profile
+app.get("/profile", authenticateToken, async (req, res) => {
+  const user = await User.findById(req.user.id).select("-password");
+  res.json(user);
+});
+
+// ✍️ Add a review (stored in DB + blockchain)
+app.post("/review", authenticateToken, async (req, res) => {
+  const { reviewText } = req.body;
+  const user = await User.findById(req.user.id);
+
+  // Store review hash on blockchain
+  const reviewHash = await storeOnBlockchain(reviewText);
+
+  res.json({
+    message: "✅ Review saved securely",
+    user: user.email,
+    reviewText,
+    reviewHash,
+  });
+});
+
+// JWT check middleware
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  if (!token) return res.sendStatus(401);
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) return res.sendStatus(403);
+    req.user = user;
+    next();
+  });
+}
+
+app.listen(3000, () => console.log("🚀 Secure Blockchain Server running on port 3000"));
