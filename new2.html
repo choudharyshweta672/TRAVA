@@ -1,3 +1,5 @@
+
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -15,14 +17,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
   <style>
+
     :root{
       --bg: linear-gradient(120deg,#fcf8ff,#f3f7ff);
       --card:#fff;
       --text:#0b1220;
       --muted:#64748b;
-      --brand1:#ff6f61;
-      --brand2:#ff9472;
-      --accent:#3b82f6;
+      --brand1:#0b8a88;
+      --brand2:#415b81;
+      --accent:#06162f;
       --radius:14px;
       --shadow:0 12px 30px rgba(11,18,34,0.08);
     }
@@ -35,7 +38,7 @@
     header.site-header{background:linear-gradient(90deg,var(--brand1),var(--brand2));padding:12px 20px;color:#fff;position:sticky;top:0;z-index:60;box-shadow:var(--shadow)}
     .header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
     .brand{display:flex;gap:12px;align-items:center}
-    .logo{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#ff8a6b,#ff5b8a);display:grid;place-items:center;color:#fff;font-weight:700}
+    .logo{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,rgb(87, 169, 242),#ff5b8a);display:grid;place-items:center;color:#fff;font-weight:700}
     .nav{display:flex;gap:8px}
     .btn{padding:8px 12px;border-radius:10px;border:none;background:rgba(255,255,255,0.12);color:#fff;cursor:pointer}
     .btn.primary{background:linear-gradient(135deg,var(--accent),#60a5fa);box-shadow:0 8px 18px rgba(59,130,246,0.18)}
@@ -91,15 +94,68 @@
       .col-4{width:100%}
       .hero-wrap{height:56vh}
     }
+    .section {
+  padding: 60px 20px;
+  text-align: center;
+}
+.section-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+.card {
+  background: rgba(255,255,255,0.08);
+  padding: 15px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease-in-out;
+}
+.card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+.card:hover {
+  transform: scale(1.05);
+}
+.footer {
+  background: #111;
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+  margin-top: 40px;
+}
+.section, 
+.section h2, 
+.section h3, 
+.section p {
+  color: white;
+}
+.footer {
+  background: #111;
+  color: white;   /* make sure footer text is white */
+  padding: 20px;
+  text-align: center;
+  margin-top: 40px;
+}
     
     /* Live Background */
     body::before {
       content: "";
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: url('https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=1600&q=80') no-repeat center center/cover;
+      background: url('https://plus.unsplash.com/premium_photo-1752840940847-248c7df013e4?q=80&w=695&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center/cover;
       filter: brightness(0.5);
       z-index: -1;
+      
     }
 
     header {
@@ -154,24 +210,37 @@
   </style>
 </head>
 <body>
-  <header class="site-header">
-    <div class="header-inner container">
-      <div class="brand" style="align-items:center">
-        <div class="logo">SX</div>
-        <div>
-          <div style="font-weight:700">SafarX</div>
-          <div style="font-size:12px;opacity:0.95">Explore · Plan · Experience</div>
-        </div>
-      </div>
-      <nav class="nav">
-        <button class="btn" id="destNavBtn">Destinations</button>
-        <button class="btn" id="hotelsNavBtn">Hotels</button>
-        <button class="btn" id="guidesNavBtn">Guides</button>
-        <button class="btn primary" id="loginBtn">Register Guide</button>
-      </nav>
-    </div>
+  
+<header class="site-header">
+  <div class="header-inner container">
     
-  </header>
+    <!-- Brand Logo -->
+    <div class="brand" style="display: flex; align-items: center; gap: 8px;">
+      <div class="logo">SX</div>
+      <!-- Add a travel icon (FontAwesome) -->
+      <i class="fas fa-compass"></i>
+      <div style="font-weight:700;">SafariX</div>
+    </div>
+
+    <!-- Tagline -->
+    <div style="font-size:12px; opacity:0.9;">
+      Explore • Plan • Experience
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+      <button class="btn" id="destNavBtn">Destinations</button>
+      <button class="btn" id="hotelsNavBtn">Hotels</button>
+      <button class="btn" id="guidesNavBtn">Guides</button>
+      <button class="btn primary" id="loginBtn">Register Guide</button>
+    </nav>
+
+    <!-- Mobile Hamburger Menu -->
+    <div class="hamburger">
+      <i class="fas fa-bars"></i>
+    </div>
+  </div>
+</header>
 
   <!-- HERO -->
   <section class="hero-wrap" aria-label="Hero">
@@ -202,7 +271,7 @@
 
       <div class="hero-right" style="width:420px">
         <div class="card" style="padding:0;overflow:hidden">
-          <img id="heroFeaturedImg" src="https://images.unsplash.com/photo-1501117716987-c8e2a3b32f88?q=80&w=1200&auto=format&fit=crop" alt="Featured hotel" style="height:240px;object-fit:cover;width:100%">
+          <img id="heroFeaturedImg" src="https://images.unsplash.com/photo-1723321025420-5af28984cd42?q=80&w=946&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Featured hotel" style="height:240px;object-fit:cover;width:100%">
           <div style="padding:14px">
             <h4 id="heroFeaturedTitle">Valley View Suite</h4>
             <div class="muted">Luxury · 4.7 ★</div>
@@ -216,30 +285,30 @@
     </div>
   </section>
 
-  <main class="container">
+  <!-- <main class="container">
     <div class="section-row">
       <div class="col-8">
         <section>
-          <h2 class="section-title">Popular Destinations</h2>
+          <h2 class="section-title" style="background-color: rgba(0,0,0,0.6); color: white; padding: 8px 12px; border-radius: 6px; display: inline-block;">Popular Destinations</h2>
           <div id="destGrid" class="cards"></div>
         </section>
 
         <section style="margin-top:22px">
-          <h2 class="section-title">Top Hotels</h2>
+          <h2 class="section-title" style="background-color: rgba(0,0,0,0.6); color: white; padding: 8px 12px; border-radius: 6px; display: inline-block;">Top Hotels</h2>
           <div id="hotelGrid" class="cards"></div>
         </section>
 
         <section style="margin-top:22px">
-          <h2 class="section-title">Local Businesses & Activities</h2>
+          <h2 class="section-title" style="background-color: rgba(0,0,0,0.6); color: white; padding: 8px 12px; border-radius: 6px; display: inline-block;">Local Businesses & Activities</h2>
           <div id="businessGrid" class="cards"></div>
         </section>
       </div>
 
       <aside class="col-4">
-        <h2 class="section-title">Local Guides</h2>
-        <div id="guideGrid" class="list-compact"></div>
-
-        <h2 class="section-title" style="margin-top:18px">Quick Map</h2>
+        <h2 class="section-title" style="background-color: rgba(0,0,0,0.6); color: white; padding: 8px 12px; border-radius: 6px; display: inline-block;">Local Guides</h2>
+        <div id="guideGrid" class="list-compact"></div> -->
+<!-- 
+        <h2 class="section-title" ">Quick Map</h2>
         <div id="map"></div>
       </aside>
     </div>
@@ -252,7 +321,85 @@
         <small class="muted">Demo — Curated images & Overpass (OSM) for businesses</small>
       </div>
     </div>
-  </footer>
+  </footer> -->
+  <!-- ================= DESTINATIONS ================= -->
+<section class="section" id="destinations">
+  <div class="container">
+    <h2 class="section-title">Popular Destinations</h2>
+    <div class="grid">
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e" alt="Goa" />
+        <h3>Goa</h3>
+        <p>Beaches, parties & culture.</p>
+      </div>
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1603262110263-fb0112e7cc33?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8amFpcHVyfGVufDB8fDB8fHww" alt="Jaipur" />
+        <h3>Jaipur</h3>
+        <p>The Pink City with royal heritage.</p>
+      </div>
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1530521954074-e64f6810b32d" alt="Manali" />
+        <h3>Manali</h3>
+        <p>Hills, snow & adventure sports.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= HOTELS ================= -->
+<section class="section" id="hotels">
+  <div class="container">
+    <h2 class="section-title">Hotels & Stays</h2>
+    <div class="grid">
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb" alt="Resort" />
+        <h3>Luxury Resorts</h3>
+        <p>5-star experiences with premium comfort.</p>
+      </div>
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1615431303449-9ad9207d05de?q=80&w=1175&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Budget" />
+        <h3>Budget Hotels</h3>
+        <p>Affordable, clean & accessible locations.</p>
+      </div>
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1673460660001-fa076c5ce41c?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aG9tZXN0YXlzfGVufDB8fDB8fHww" alt="Homestay" />
+        <h3>Homestays</h3>
+        <p>Feel at home with local hosts.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= GUIDES ================= -->
+<section class="section" id="guides">
+  <div class="container">
+    <h2 class="section-title">Local Guides</h2>
+    <div class="grid">
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9" alt="Guide 1" />
+        <h3>Ravi Kumar</h3>
+        <p>Expert in North India tours.</p>
+      </div>
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e" alt="Guide 2" />
+        <h3>Priya Sharma</h3>
+        <p>Cultural tours & heritage walks.</p>
+      </div>
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde" alt="Guide 3" />
+        <h3>Arjun Mehta</h3>
+        <p>Adventure & trekking specialist.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer class="footer">
+  <div class="container">
+    <p>© 2025 SafarX | Explore · Plan · Experience</p>
+  </div>
+</footer>
 
   <!-- Floating action buttons -->
   <button id="tripBtn" class="fab" title="Open trip manager">🗺️</button>
