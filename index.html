@@ -1,226 +1,641 @@
-<!doctype html>
+<!-- index.html -->
+<!-- Goa Tourism Website (HTML, CSS, JavaScript) with Gallery/Video Section + Booking Section -->
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>SafarX — Explore • Plan • Experience</title>
-  <link rel="stylesheet" href="css/style.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
-  <!-- model-viewer for 3D/AR previews -->
-  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-  
-<!-- AR/VR model-viewer
-<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script> -->
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Goa Explorer</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <!-- Animate.css for basic animations -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <!-- AOS for scroll animations -->
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css"/>
+  <style>
+    :root {
+      --primary: #2196f3;
+      --secondary: #00bcd4;
+      --accent: #43e97b;
+      --bg: #f8fafc;
+      --card-bg: #fff;
+      --shadow: 0 4px 24px rgba(33,150,243,0.10);
+      --radius: 16px;
+      --font-main: 'Poppins', Arial, sans-serif;
+    }
+    body {
+      font-family: var(--font-main);
+      background: linear-gradient(135deg, var(--bg) 0%, #e0f7fa 100%);
+      color: #222;
+      margin: 0;
+    }
+    header {
+      background: linear-gradient(90deg, var(--secondary) 0%, var(--primary) 100%);
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2vw;
+      transition: box-shadow 0.3s;
+      animation: fadeInDown 0.7s;
+    }
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-30px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+    header .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 600;
+      font-size: 1.5rem;
+      color: #fff;
+      letter-spacing: 1px;
+    }
+    header .logo img {
+      height: 32px;
+      vertical-align: middle;
+    }
+    header input {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 12px;
+      width: 260px;
+      font-size: 1rem;
+      transition: box-shadow 0.2s;
+      box-shadow: 0 2px 8px rgba(33,150,243,0.10);
+    }
+    header input:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px #90caf9;
+    }
+    main {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 2rem;
+      padding: 2rem 2vw;
+      max-width: 1200px;
+      margin: auto;
+    }
+    @media (max-width: 900px) {
+      main { grid-template-columns: 1fr; gap: 1rem; padding: 1rem;}
+      aside { margin-top: 2rem;}
+    }
+    #map {
+      height: 400px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 1.5rem;
+      transition: box-shadow 0.3s;
+    }
+    .card {
+      background: linear-gradient(135deg, var(--card-bg) 80%, #e3f2fd 100%);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 1.5rem;
+      padding: 1.5rem;
+      transition: box-shadow 0.3s, transform 0.3s;
+      animation: fadeInUp 1s;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+    .card:hover {
+      box-shadow: 0 8px 32px rgba(33,150,243,0.18);
+      transform: translateY(-4px) scale(1.02);
+    }
+    .card h2 {
+      font-weight: 600;
+      color: var(--primary);
+      margin-top: 0;
+    }
+    .places {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+    .place {
+      display: flex;
+      gap: 0.5rem;
+      border-radius: 12px;
+      background: #f1f5f9;
+      box-shadow: 0 2px 12px rgba(33,150,243,0.08);
+      transition: box-shadow 0.3s, transform 0.3s;
+      cursor: pointer;
+      align-items: center;
+      padding: 0.5rem;
+    }
+    .place:hover {
+      box-shadow: 0 8px 32px rgba(33,150,243,0.18);
+      transform: scale(1.03);
+    }
+    .place img {
+      width: 100px;
+      height: 70px;
+      object-fit: cover;
+      border-radius: 8px;
+      transition: transform 0.3s;
+    }
+    .place img:hover {
+      transform: scale(1.12);
+      z-index: 2;
+    }
+    .place h3 {
+      margin: 0 0 0.3rem 0;
+      font-size: 1.1rem;
+      color: var(--primary);
+    }
+    .place button {
+      background: linear-gradient(90deg, var(--secondary) 0%, var(--primary) 100%);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 0.4rem 1rem;
+      font-weight: 600;
+      margin-top: 0.5rem;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(33,150,243,0.10);
+      transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+    }
+    .place button:hover {
+      background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+      transform: scale(1.08);
+      box-shadow: 0 4px 16px rgba(33,150,243,0.18);
+    }
+    .guides .guide {
+      border-radius: 10px;
+      background: #e3f2fd;
+      box-shadow: 0 2px 8px rgba(33,150,243,0.08);
+      margin-bottom: 0.7rem;
+      padding: 0.7rem;
+      transition: box-shadow 0.3s, transform 0.3s;
+      animation: fadeInRight 1s;
+    }
+    @keyframes fadeInRight {
+      from { opacity: 0; transform: translateX(30px);}
+      to { opacity: 1; transform: translateX(0);}
+    }
+    .guides .guide:hover {
+      box-shadow: 0 8px 32px rgba(33,150,243,0.18);
+      transform: scale(1.03);
+    }
+    .guides .guide a {
+      background: linear-gradient(90deg, var(--accent) 0%, var(--secondary) 100%);
+      color: #fff;
+      border-radius: 8px;
+      padding: 0.3rem 0.8rem;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background 0.2s, transform 0.2s;
+      display: inline-block;
+      margin-top: 0.3rem;
+    }
+    .guides .guide a:hover {
+      background: linear-gradient(90deg, var(--secondary) 0%, var(--accent) 100%);
+      transform: scale(1.08);
+    }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 0.7rem;
+    }
+    .gallery img, .gallery video {
+      width: 100%;
+      border-radius: 10px;
+      object-fit: cover;
+      box-shadow: 0 2px 12px rgba(33,150,243,0.08);
+      transition: transform 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+    }
+    .gallery img:hover, .gallery video:hover {
+      transform: scale(1.08);
+      box-shadow: 0 8px 32px rgba(33,150,243,0.18);
+      z-index: 2;
+    }
+    /* Lightbox overlay */
+    .lightbox-overlay {
+      position: fixed;
+      top:0; left:0; width:100vw; height:100vh;
+      background: rgba(33,150,243,0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      animation: fadeIn 0.4s;
+    }
+    .lightbox-content {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 8px 32px rgba(33,150,243,0.18);
+      padding: 1rem;
+      max-width: 90vw;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeIn 0.4s;
+    }
+    .lightbox-content img, .lightbox-content video {
+      max-width: 80vw;
+      max-height: 70vh;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(33,150,243,0.10);
+    }
+    .lightbox-close {
+      position: absolute;
+      top: 24px;
+      right: 32px;
+      font-size: 2rem;
+      color: var(--primary);
+      background: none;
+      border: none;
+      cursor: pointer;
+      z-index: 10001;
+      transition: color 0.2s;
+    }
+    .lightbox-close:hover {
+      color: var(--secondary);
+    }
+    /* Booking form floating labels */
+    .form-floating {
+      position: relative;
+      margin-bottom: 1.2rem;
+    }
+    .form-floating input,
+    .form-floating select {
+      width: 100%;
+      padding: 1rem 0.7rem 0.3rem 0.7rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      background: #f8fafc;
+      font-size: 1rem;
+      transition: box-shadow 0.2s, border-color 0.2s;
+    }
+    .form-floating input:focus,
+    .form-floating select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px #90caf9;
+      outline: none;
+    }
+    .form-floating label {
+      position: absolute;
+      left: 16px;
+      top: 18px;
+      background: #f8fafc;
+      padding: 0 4px;
+      font-size: 1rem;
+      color: var(--primary);
+      pointer-events: none;
+      transition: 0.2s;
+      opacity: 0.7;
+    }
+    .form-floating input:focus + label,
+    .form-floating input:not(:placeholder-shown) + label,
+    .form-floating select:focus + label,
+    .form-floating select:not([value=""]) + label {
+      top: -10px;
+      left: 12px;
+      font-size: 0.85rem;
+      color: var(--secondary);
+      opacity: 1;
+      background: #e3f2fd;
+      border-radius: 6px;
+    }
+    .booking-btn {
+      background: linear-gradient(90deg, var(--secondary) 0%, var(--primary) 100%);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 0.7rem 0;
+      font-weight: 600;
+      font-size: 1.1rem;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(33,150,243,0.10);
+      transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+      width: 100%;
+      margin-top: 0.5rem;
+    }
+    .booking-btn:hover {
+      background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+      transform: scale(1.04);
+      box-shadow: 0 4px 16px rgba(33,150,243,0.18);
+    }
+    /* Modal */
+    .modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+      animation: fadeIn 0.5s;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95);}
+      to { opacity: 1; transform: scale(1);}
+    }
+    .modal-content {
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      max-width: 600px;
+      width: 100%;
+      box-shadow: var(--shadow);
+      animation: fadeIn 0.5s;
+      position: relative;
+    }
+    .modal-content img {
+      width: 100%;
+      border-radius: 10px;
+      margin-top: 0.5rem;
+      box-shadow: 0 2px 12px rgba(33,150,243,0.08);
+    }
+    .modal-content button {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: linear-gradient(90deg, var(--secondary) 0%, var(--primary) 100%);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.3rem 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .modal-content button:hover {
+      background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+      transform: scale(1.08);
+    }
+    footer {
+      background: #fff;
+      text-align: center;
+      padding: 1rem;
+      border-top: 1px solid #e2e8f0;
+      margin-top: 2rem;
+      font-size: 1rem;
+      color: #1976d2;
+      box-shadow: 0 2px 8px rgba(33,150,243,0.08);
+      animation: fadeInUp 1s;
+    }
+    /* Scroll animations for sections */
+    [data-aos] {
+      opacity: 0;
+      transition-property: opacity, transform;
+    }
+    /* Responsive tweaks */
+    @media (max-width: 600px) {
+      header { flex-direction: column; gap: 0.7rem; padding: 1rem 0.5rem;}
+      main { padding: 0.5rem; }
+      #map { height: 220px; }
+      .card { padding: 1rem; border-radius: 10px;}
+      .modal-content { padding: 1rem; border-radius: 10px;}
+      .gallery img, .gallery video { border-radius: 8px; }
+      .lightbox-content img, .lightbox-content video { max-width: 95vw; max-height: 60vh; }
+    }
+  </style>
 </head>
 <body>
-  <header class="site-header">
-    <div class="container header-row">
-      <div class="brand">    
-        <div class="logo">SX</div>
-        <div class="brand-text">
-          <h1>SafarX</h1>
-          <small>Explore • Plan • Experience</small>
-        </div>
-      </div>
-
-      <nav class="nav">
-        <button class="icon-btn" id="btn-trip" title="Trip Manager" aria-label="Open Trip Manager">
-          <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zM4 10h10v2H4zM4 14h7v2H4z"/></svg>
-        </button>
-
-        <button class="icon-btn" id="btn-3d" title="AR / VR preview" aria-label="Open 3D preview">
-          <svg viewBox="0 0 24 24"><path d="M3 7.5l9-4 9 4v9l-9 4-9-4v-9z"/></svg>
-        </button>
-
-        <button class="btn primary" id="open-auth">Guide Login</button>
-      </nav>
-    </div>
+  <header>
+    <span class="logo">
+      <img src="https://cdn-icons-png.flaticon.com/512/197/197484.png" alt="Goa Logo">
+      Goa Explorer
+    </span>
+    <input id="search" type="text" placeholder="Search places (e.g. beach, fort)">
   </header>
 
-  <main class="container">
-    <!-- HERO -->
-    <section class="hero">
-      <div class="hero-left">
-        <p class="kicker">Travel & Tourism</p>
-        <h2>Travel deeper with local guides. Plan smarter with SafarX.</h2>
-        <p class="muted">Search destinations, chat with our assistant, register as a guide, preview rooms in 3D and manage budgets & itinerary — all in one lightweight demo.</p>
-
-        <div class="search-card">
-          <input id="where" class="input" placeholder="Destination (e.g., Munnar)" />
-          <div class="date-row">
-            <input id="from" type="date" class="input" />
-            <input id="to" type="date" class="input" />
-          </div>
-          <div class="actions">
-            <button class="btn" id="searchBtn">Search</button>
-            <button class="btn" id="open-chat">AI Chat</button>
-          </div>
+  <main>
+    <section>
+      <div id="map" data-aos="fade-up"></div>
+      <div class="card" data-aos="fade-up" data-aos-delay="100">
+        <h2>Popular Places</h2>
+        <div id="places" class="places"></div>
+      </div>
+      <div class="card" data-aos="fade-up" data-aos-delay="200">
+        <h2>Food, Culture & Festivals</h2>
+        <div class="gallery">
+          <img src="goan thali.webp" alt="Goan Thali" class="gallery-item">
+          <img src="goan carnival.jpg" alt="Goan Carnival" class="gallery-item">
+          <img src="Corridinho-Dance.jpg" alt="Traditional Dance" class="gallery-item">
         </div>
       </div>
-
-      <div class="hero-right">
-        <div class="featured-card">
-          <!-- <img src="assets/images/sample.jpg" alt="Featured stay" /> -->
-           <video width="320" height="240" controls autoplay muted loop >
-  <source src="3d1.mp4" type="video/mp4">
-  <!-- <source src="movie.ogg" type="video/ogg"> audio store -->
-Your browser does not support the video tag.
-</video>
-          <div class="card-body">
-            <h3>Valley View Suite</h3>
-            <p class="muted">Warm minimal room with panoramic views.</p>
-            <div class="card-actions">
-              <button class="btn" id="view-3d-hero">View in 3D</button>
-              <button class="btn outline" id="add-to-trip-hero">Add to Trip</button>
-            </div>
+      <div class="card" data-aos="fade-up" data-aos-delay="300">
+        <h2>Book Your Experience</h2>
+        <form id="bookingForm" autocomplete="off">
+          <div class="form-floating">
+            <input type="text" id="name" placeholder=" " required>
+            <label for="name">Full Name</label>
           </div>
-        </div>
+          <div class="form-floating">
+            <select id="service" required>
+              <option value="" disabled selected>--Select--</option>
+              <option value="hotel">Hotel Booking</option>
+              <option value="cab">Cab Booking</option>
+              <option value="guide">Hire Local Guide</option>
+            </select>
+            <label for="service">Service</label>
+          </div>
+          <div class="form-floating">
+            <input type="date" id="date" placeholder=" " required>
+            <label for="date">Date</label>
+          </div>
+          <div class="form-floating">
+            <input type="tel" id="contact" placeholder=" " required>
+            <label for="contact">Contact Number</label>
+          </div>
+          <button type="submit" class="booking-btn">Book Now</button>
+        </form>
+        <p id="bookingMsg" style="color:green;font-weight:bold;"></p>
       </div>
     </section>
 
-    <!-- CARDS -->
-    <section class="grid-section">
-      <h3>Popular Destinations</h3>
-      <div id="destGrid" class="cards"></div>
-    </section>
-
-    <section class="grid-section alt">
-      <h3>Rooms & Stays</h3>
-      <div id="roomGrid" class="cards"></div>
-    </section>
-
-    <section class="grid-section">
-      <h3>Local Guides</h3>
-      <div id="guideGrid" class="cards"></div>
-    </section>
+    <aside>
+      <div class="card guides" data-aos="fade-left" data-aos-delay="100">
+        <h2>Local Guides</h2>
+        <div id="guides"></div>
+      </div>
+      <div class="card" data-aos="fade-left" data-aos-delay="200">
+        <h2>Goan Culture Quick Facts</h2>
+        <ul>
+          <li><strong>Food:</strong> Vindaloo, Xacuti, Bebinca, Feni</li>
+          <li><strong>Festivals:</strong> Carnival, Shigmo, Christmas</li>
+          <li><strong>Markets:</strong> Anjuna Flea, Mapusa Market</li>
+        </ul>
+      </div>
+      <div class="card" data-aos="fade-left" data-aos-delay="300">
+        <h2>Emergency Contacts</h2>
+        <ul>
+          <li>Police: 100</li>
+          <li>Ambulance: 102</li>
+          <li>Tourist Helpline: +91-832-XXXXX</li>
+        </ul>
+      </div>
+    </aside>
   </main>
 
-  <footer class="site-footer">
-    <div class="container footer-row">
-      <small>© <span id="year"></span> SafarX — demo for travel experiences</small>
-      <small class="muted">Built for explorers</small>
-    </div>
+  <footer data-aos="fade-up">
+    © <span id="year"></span> Goa Explorer. Built with ❤️
   </footer>
 
-  <!-- CHAT WIDGET (client demo) -->
-  <div id="chatWidget" class="chat-widget" aria-hidden="true">
-    <div class="chat-header">
-      <strong>SafarX Assistant</strong>
-      <div class="chat-controls">
-        <button class="icon-btn" id="minChat" title="Minimize">−</button>
-        <button class="icon-btn" id="closeChat" title="Close">×</button>
-      </div>
-    </div>
-    <div class="chat-body" id="chatBody">
-      <div class="msg bot">Hi! Ask me about destinations, budgets, or local tips.</div>
-    </div>
-    <div class="chat-input">
-      <input id="chatInput" placeholder="Try: '3-day Jaipur plan' or 'Budget 20k for Goa'">
-      <button class="btn primary" id="sendMsg">Send</button>
+  <!-- Modal -->
+  <div id="modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <button id="closeModal">Close</button>
+      <h2 id="modalTitle"></h2>
+      <img id="modalImage" src="" alt="">
+      <p id="modalDesc"></p>
+      <p><strong>Best time:</strong> <span id="modalTime"></span></p>
     </div>
   </div>
-  <button id="chatFab" class="fab" aria-label="Open chat">💬</button>
 
-  <!-- AUTH MODAL -->
-  <div id="authModal" class="modal" aria-hidden="true">
-    <div class="panel">
-      <header class="panel-header">
-        <strong>Local Guide — Register / Login</strong>
-        <button class="icon-btn" id="closeAuth">×</button>
-      </header>
-      <div class="panel-body">
-        <div class="auth-grid">
-          <div>
-            <h4>Create Account</h4>
-            <input id="regName" class="input" placeholder="Full name" />
-            <input id="regEmail" class="input" placeholder="Email" />
-            <input id="regPass" type="password" class="input" placeholder="Password" />
-            <input id="regCity" class="input" placeholder="City / Region" />
-            <input id="regLang" class="input" placeholder="Languages (comma separated)" />
-            <button class="btn primary" id="registerBtn">Register</button>
-          </div>
-          <div>
-            <h4>Login</h4>
-            <input id="logEmail" class="input" placeholder="Email" />
-            <input id="logPass" type="password" class="input" placeholder="Password" />
-            <button class="btn" id="loginBtn">Login</button>
-            <div id="authStatus" class="muted small"></div>
+  <!-- Lightbox for gallery -->
+  <div id="lightbox" style="display:none;"></div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+  <script>
+    // Animate on scroll
+    AOS.init({ duration: 800, once: true });
+
+    // Map & Places
+    const PLACES = [
+      {id:1, name:'Baga Beach', type:'Beach', lat:15.5499, lng:73.7486, img:'baga.jpg', desc:'Lively beach with nightlife, water sports and shacks.', bestTime:'Nov - Feb'},
+      {id:2, name:'Fort Aguada', type:'Fort', lat:15.4909, lng:73.7758, img:'fort.jpg', desc:'17th-century Portuguese fort with sea views.', bestTime:'Oct - Mar'},
+      {id:3, name:'Basilica of Bom Jesus', type:'Church', lat:15.5890, lng:73.8346, img:'jesus.jpg', desc:'UNESCO-listed church housing St. Francis Xavier.', bestTime:'All year'}
+    ];
+
+    const GUIDES = [
+      {name:'Ravi Naik', phone:'+91-9876543210', langs:'English, Hindi, Konkani', rating:4.8},
+      {name:'Maria D\'Souza', phone:'+91-9123456780', langs:'English, Portuguese', rating:4.7}
+    ];
+
+    // Leaflet map
+    const map = L.map('map').setView([15.5,73.8], 10);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
+
+    // Animated markers
+    PLACES.forEach((p, idx) => {
+      const markerIcon = L.divIcon({
+        className: 'custom-marker',
+        html: `<div style="background:linear-gradient(90deg,#00bcd4,#2196f3);border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px #2196f3a0;animation:bounce 1s ${idx*0.2}s infinite alternate;"><span style="color:#fff;font-weight:bold;">★</span></div>`,
+        iconSize: [28, 28],
+        iconAnchor: [14, 28]
+      });
+      const marker = L.marker([p.lat, p.lng], {icon: markerIcon}).addTo(map).bindPopup(p.name);
+      marker.on('mouseover', function() {
+        marker.openPopup();
+        marker._icon.style.transform = 'scale(1.2)';
+      });
+      marker.on('mouseout', function() {
+        marker.closePopup();
+        marker._icon.style.transform = 'scale(1)';
+      });
+      marker.on('click', () => showModal(p.id));
+    });
+
+    // Marker bounce animation
+    const style = document.createElement('style');
+    style.innerHTML = `
+      @keyframes bounce { 0%{transform:translateY(0);} 100%{transform:translateY(-10px);} }
+      .custom-marker { cursor:pointer; }
+    `;
+    document.head.appendChild(style);
+
+    // Render places
+    const placesDiv = document.getElementById('places');
+    function renderPlaces(list) {
+      placesDiv.innerHTML = '';
+      list.forEach((p, i) => {
+        const div = document.createElement('div');
+        div.className = 'place';
+        div.innerHTML = `<img src="${p.img}" alt="${p.name}" class="place-img"><div><h3>${p.name}</h3><p>${p.type}</p><button onclick="showModal(${p.id})">View</button></div>`;
+        placesDiv.appendChild(div);
+      });
+      AOS.refresh();
+    }
+
+    // Guides
+    const guidesDiv = document.getElementById('guides');
+    GUIDES.forEach((g, i) => {
+      const div = document.createElement('div');
+      div.className = 'guide';
+      div.innerHTML = `<h3>${g.name}</h3><p>Languages: ${g.langs}</p><p>Rating: ${g.rating} ★</p><a href="tel:${g.phone}">Call</a>`;
+      guidesDiv.appendChild(div);
+    });
+
+    // Modal logic
+    function showModal(id) {
+      const p = PLACES.find(pl => pl.id===id);
+      document.getElementById('modalTitle').innerText = p.name;
+      document.getElementById('modalImage').src = p.img;
+      document.getElementById('modalDesc').innerText = p.desc;
+      document.getElementById('modalTime').innerText = p.bestTime;
+      document.getElementById('modal').style.display = 'flex';
+    }
+    document.getElementById('closeModal').onclick = () => {
+      document.getElementById('modal').style.display = 'none';
+    };
+
+    // Search
+    document.getElementById('search').addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase();
+      const filtered = PLACES.filter(p => p.name.toLowerCase().includes(q) || p.type.toLowerCase().includes(q));
+      renderPlaces(filtered);
+    });
+
+    document.getElementById('year').innerText = new Date().getFullYear();
+
+    document.getElementById('bookingForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      document.getElementById('bookingMsg').innerText = "✅ Your booking has been submitted! We will contact you soon.";
+      e.target.reset();
+    });
+
+    // Gallery lightbox
+    function showLightbox(src, type) {
+      const overlay = document.getElementById('lightbox');
+      overlay.innerHTML = `
+        <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+        <div class="lightbox-overlay" onclick="closeLightbox(event)">
+          <div class="lightbox-content">
+            ${type === 'img' ? `<img src="${src}" alt="Gallery">` : `<video src="${src}" controls autoplay></video>`}
           </div>
         </div>
-      </div>
-    </div>
-  </div>
+      `;
+      overlay.style.display = 'block';
+      document.body.style.overflow = 'hidden';
+    }
+    window.closeLightbox = function(e) {
+      if (!e || e.target.classList.contains('lightbox-overlay') || e.target.classList.contains('lightbox-close')) {
+        document.getElementById('lightbox').style.display = 'none';
+        document.body.style.overflow = '';
+      }
+    };
+    document.querySelectorAll('.gallery-item').forEach(item => {
+      item.addEventListener('click', function() {
+        if (this.tagName === 'IMG') showLightbox(this.src, 'img');
+        else if (this.tagName === 'VIDEO') showLightbox(this.src, 'video');
+      });
+    });
 
-  <!-- 3D ROOM PREVIEW -->
-  <div id="roomModal" class="modal modal-3d" aria-hidden="true">
-    <div class="panel wide">
-      <header class="panel-header">
-        <strong>Room 3D Preview</strong>
-        <button class="icon-btn" id="close3d">×</button>
-      </header>
+    // Smooth scroll for anchor links (if any)
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) target.scrollIntoView({behavior:'smooth'});
+      });
+    });
 
-      <model-viewer id="roomViewer"
-        src="3d.jpg"
-        alt="3D room preview"
-        ar
-        ar-modes="webxr scene-viewer quick-look"
-        camera-controls
-        exposure="1"
-        shadow-intensity="1">
-      </model-viewer>
-
-      <div class="panel-body small">
-        <button class="btn" id="swap-min">Minimal</button>
-        <button class="btn" id="swap-suite">Suite</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- TRIP MANAGER -->
-  <div id="tripModal" class="modal" aria-hidden="true">
-    <div class="panel wide">
-      <header class="panel-header">
-        <strong>Trip Manager</strong>
-        <button class="icon-btn" id="closeTrip">×</button>
-      </header>
-      <div class="panel-body">
-        <div class="trip-grid">
-          <div class="trip-left">
-            <h4>Itinerary</h4>
-            <ul id="itinerary" class="itinerary"></ul>
-
-            <div class="add-row">
-              <input id="placeName" class="input" placeholder="Place / Activity" />
-              <input id="placeDay" type="number" class="input small" min="1" placeholder="Day" />
-              <button class="btn" id="addPlace">Add</button>
-            </div>
-          </div>
-
-          <div class="trip-right">
-            <h4>Budget Planner</h4>
-            <div class="budget-row">
-              <label>Target Budget (₹)</label>
-              <input id="targetBudget" type="number" class="input" placeholder="e.g., 20000" />
-            </div>
-            <div class="budget-row">
-              <label>Estimated Spent (₹)</label>
-              <input id="spentBudget" type="number" class="input" placeholder="0" />
-            </div>
-            <div class="budget-summary muted" id="budgetSummary">Remaining: —</div>
-            <div style="margin-top:10px; display:flex; gap:8px">
-              <button class="btn primary" id="saveTrip">Save Trip</button>
-              <button class="btn outline" id="clearTrip">Clear</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script src="js/script.js"></script>
-  
+    renderPlaces(PLACES);
+  </script>
 </body>
 </html>
