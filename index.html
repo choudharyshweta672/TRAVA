@@ -4,223 +4,1077 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>SafarX — Explore • Plan • Experience</title>
-  <link rel="stylesheet" href="css/style.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
-  <!-- model-viewer for 3D/AR previews -->
-  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-  
-<!-- AR/VR model-viewer
-<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script> -->
 
+  <!-- Model viewer for 3D / AR -->
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <!-- Leaflet for map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <!-- <script src="backend.js"></script> -->
+    <script src="script.js"></script>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+
+    :root{
+      --bg: linear-gradient(120deg,#fcf8ff,#f3f7ff);
+      --card:#fff;
+      --text:#0b1220;
+      --muted:#64748b;
+      --brand1:#0b8a88;
+      --brand2:#415b81;
+      --accent:#06162f;
+      --radius:14px;
+      --shadow:0 12px 30px rgba(11,18,34,0.08);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:'Poppins',sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+    a{color:inherit}
+    .container{max-width:1200px;margin:0 auto;padding:20px}
+
+    /* Header */
+    header.site-header{background:linear-gradient(90deg,var(--brand1),var(--brand2));padding:12px 20px;color:#fff;position:sticky;top:0;z-index:60;box-shadow:var(--shadow)}
+    .header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,rgb(87, 169, 242),#ff5b8a);display:grid;place-items:center;color:#fff;font-weight:700}
+    .nav{display:flex;gap:8px}
+    .btn{padding:8px 12px;border-radius:10px;border:none;background:rgba(255,255,255,0.12);color:#fff;cursor:pointer}
+    .btn.primary{background:linear-gradient(135deg,var(--accent),#60a5fa);box-shadow:0 8px 18px rgba(59,130,246,0.18)}
+
+    /* Hero */
+    .hero-wrap{position:relative;height:70vh;min-height:420px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+    .hero-bg{position:absolute;inset:0;background-size:cover;background-position:center;filter:brightness(0.55) saturate(1.05);transform:scale(1.03)}
+    .hero-overlay{position:absolute;inset:0;background:linear-gradient(180deg, rgba(3,7,18,0.15), rgba(3,7,18,0.42))}
+    .hero{position:relative;z-index:3;width:100%;max-width:1100px;display:flex;gap:28px;align-items:center}
+    .hero-left{flex:1;color:white;padding:28px}
+    .kicker{display:inline-block;background:rgba(255,255,255,0.12);padding:6px 10px;border-radius:999px;font-weight:700;font-size:12px}
+    h1.hero-title{font-size:44px;margin:14px 0 6px}
+    p.lead{opacity:0.95;color:rgba(255,255,255,0.95);max-width:700px}
+
+    .search-card{margin-top:18px;background:rgba(255,255,255,0.96);color:#081426;padding:12px;border-radius:12px;display:flex;gap:10px;align-items:center}
+    .search-card input{padding:10px;border-radius:8px;border:1px solid #e6eefb}
+    .search-card .btn{padding:10px 14px;border-radius:8px}
+
+    /* main content */
+    main{margin-top:12px;padding:36px 20px 80px}
+    .section-row{display:flex;gap:20px;align-items:flex-start}
+    .col-8{flex:1}
+    .col-4{width:340px}
+    h2.section-title{font-size:22px;margin:8px 0;color:var(--text)}
+    .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+    .card{background:var(--card);border-radius:12px;padding:12px;box-shadow:var(--shadow);overflow:hidden;transition:transform .28s ease, box-shadow .28s ease}
+    .card:hover{transform:translateY(-8px);box-shadow:0 18px 40px rgba(11,18,34,0.12)}
+    .card img{width:100%;height:150px;object-fit:cover;border-radius:8px}
+    .card h4{margin:10px 0 6px}
+    .muted{color:var(--muted);font-size:13px}
+
+    .guide-card{display:flex;gap:12px;align-items:center;padding:10px;border-radius:10px;background:linear-gradient(180deg,#fff,#fbfdff);box-shadow:var(--shadow)}
+    .guide-avatar{width:56px;height:56px;border-radius:50%;object-fit:cover}
+    .list-compact{display:flex;flex-direction:column;gap:10px}
+    .biz{display:flex;justify-content:space-between;align-items:center;padding:12px;background:#fff;border-radius:10px;box-shadow:var(--shadow)}
+    .fab{position:fixed;right:20px;bottom:20px;width:56px;height:56px;border-radius:50%;background:var(--brand2);border:none;font-size:22px;box-shadow:var(--shadow);cursor:pointer}
+    .chat-fab{position:fixed;right:90px;bottom:20px;background:var(--accent);color:white}
+
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,6,23,0.45);z-index:80;padding:20px}
+    .modal.show{display:flex}
+    .modal .panel{width:100%;max-width:1000px;background:var(--card);border-radius:12px;padding:18px;box-shadow:var(--shadow);position:relative}
+    .modal .close{position:absolute;right:18px;top:18px;border:none;background:transparent;font-size:22px;cursor:pointer}
+
+    #map{height:220px;border-radius:10px;overflow:hidden}
+
+    .gallery{display:flex;gap:8px;margin-top:12px}
+    .gallery img{width:calc(33% - 6px);height:96px;object-fit:cover;border-radius:8px}
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:linear-gradient(90deg,#fff,#fff);font-weight:600}
+
+    @media (max-width:900px){
+      .hero{flex-direction:column;align-items:flex-start}
+      .section-row{flex-direction:column}
+      .col-4{width:100%}
+      .hero-wrap{height:56vh}
+    }
+    .section {
+  padding: 60px 20px;
+  text-align: center;
+}
+.section-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+.card {
+  background: rgba(255,255,255,0.08);
+  padding: 15px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease-in-out;
+}
+.card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+.card:hover {
+  transform: scale(1.05);
+}
+.footer {
+  background: #111;
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+  margin-top: 40px;
+}
+.section, 
+.section h2, 
+.section h3, 
+.section p {
+  color: white;
+}
+.footer {
+  background: #111;
+  color: white;   /* make sure footer text is white */
+  padding: 20px;
+  text-align: center;
+  margin-top: 40px;
+}
+    
+    /* Live Background */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: url('https://plus.unsplash.com/premium_photo-1752840940847-248c7df013e4?q=80&w=695&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center/cover;
+      filter: brightness(0.5);
+      z-index: -1;
+      
+    }
+
+    header {
+      background: rgba(0,0,0,0.5);
+      padding: 20px;
+      text-align: center;
+    }
+    header h1 { font-size: 2.5rem; color: #ffdd57; }
+    header p { font-size: 1.2rem; color: #ddd; }
+
+    .section {
+      padding: 50px 20px;
+      background: rgba(0,0,0,0.4);
+      margin: 20px;
+      border-radius: 12px;
+    }
+
+    h2 { color: #ffdd57; margin-bottom: 20px; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.1);
+      padding: 15px;
+      border-radius: 12px;
+      text-align: center;
+      backdrop-filter: blur(6px);
+      transition: 0.3s;
+    }
+    .card:hover { transform: translateY(-5px); background: rgba(255,255,255,0.2); }
+
+    .card img {
+      width: 100%;
+      height: 160px;
+      border-radius: 10px;
+      object-fit: cover;
+      margin-bottom: 10px;
+    }
+    .muted { color: #ddd; font-size: 0.9rem; }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: rgba(0,0,0,0.6);
+      margin-top: 20px;
+    }
+  
+  </style>
 </head>
 <body>
-  <header class="site-header">
-    <div class="container header-row">
-      <div class="brand">    
-        <div class="logo">SX</div>
-        <div class="brand-text">
-          <h1>SafarX</h1>
-          <small>Explore • Plan • Experience</small>
-        </div>
-      </div>
-
-      <nav class="nav">
-        <button class="icon-btn" id="btn-trip" title="Trip Manager" aria-label="Open Trip Manager">
-          <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zM4 10h10v2H4zM4 14h7v2H4z"/></svg>
-        </button>
-
-        <button class="icon-btn" id="btn-3d" title="AR / VR preview" aria-label="Open 3D preview">
-          <svg viewBox="0 0 24 24"><path d="M3 7.5l9-4 9 4v9l-9 4-9-4v-9z"/></svg>
-        </button>
-
-        <button class="btn primary" id="open-auth">Guide Login</button>
-      </nav>
+  
+<header class="site-header">
+  <div class="header-inner container">
+    
+    <!-- Brand Logo -->
+    <div class="brand" style="display: flex; align-items: center; gap: 8px;">
+      <div class="logo">SX</div>
+      <!-- Add a travel icon (FontAwesome) -->
+      <i class="fas fa-compass"></i>
+      <div style="font-weight:700;">SafarX</div>
     </div>
-  </header>
 
-  <main class="container">
-    <!-- HERO -->
-    <section class="hero">
+    <!-- Tagline -->
+    <div style="font-size:12px; opacity:0.9;">
+      Explore • Plan • Experience
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+      <button class="btn" id="destNavBtn">Destinations</button>
+      <button class="btn" id="hotelsNavBtn">Hotels</button>
+      <button class="btn" id="guidesNavBtn">Guides</button>
+      <button class="btn primary" id="loginBtn">Register Guide</button>
+    </nav>
+
+    <!-- Mobile Hamburger Menu -->
+    <div class="hamburger">
+      <i class="fas fa-bars"></i>
+    </div>
+  </div>
+</header>
+
+  <!-- HERO -->
+  <section class="hero-wrap" aria-label="Hero">
+    <div id="heroBg" class="hero-bg" style="background-image:url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1920&auto=format&fit=crop')"></div>
+    <div class="hero-overlay"></div>
+
+    <div class="hero container">
       <div class="hero-left">
-        <p class="kicker">Travel & Tourism</p>
-        <h2>Travel deeper with local guides. Plan smarter with SafarX.</h2>
-        <p class="muted">Search destinations, chat with our assistant, register as a guide, preview rooms in 3D and manage budgets & itinerary — all in one lightweight demo.</p>
+        <span class="kicker">Travel & Tourism</span>
+        <h1 class="hero-title">Explore India — Handpicked Places & Local Guides</h1>
+        <p class="lead">Discover curated galleries, hotels, activities and local businesses. Preview rooms in AR/3D and build your itinerary.</p>
 
-        <div class="search-card">
-          <input id="where" class="input" placeholder="Destination (e.g., Munnar)" />
-          <div class="date-row">
-            <input id="from" type="date" class="input" />
-            <input id="to" type="date" class="input" />
+        <div class="search-card" role="search">
+          <input id="where" placeholder="Where do you want to go? (e.g., Goa, Jaipur)" style="flex:1" />
+          <input id="from" type="date" />
+          <input id="to" type="date" />
+          <button id="searchBtn" class="btn primary">Search</button>
+        </div>
+
+        <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+          <div id="weatherWidget" style="background:rgba(255,255,255,0.06);padding:8px;border-radius:8px;">
+            <small class="muted" style="color:rgba(255,255,255,0.9)">Weather</small>
+            <div id="weatherMain" style="font-weight:700;color:white">Enter destination & click Search</div>
           </div>
-          <div class="actions">
-            <button class="btn" id="searchBtn">Search</button>
-            <button class="btn" id="open-chat">AI Chat</button>
-          </div>
+          <button id="showMapBtn" class="btn" style="background:rgba(255,255,255,0.12);color:white">Show Map</button>
         </div>
       </div>
 
-      <div class="hero-right">
-        <div class="featured-card">
-          <!-- <img src="assets/images/sample.jpg" alt="Featured stay" /> -->
-           <video width="320" height="240" controls autoplay muted loop >
-  <source src="3d1.mp4" type="video/mp4">
-  <!-- <source src="movie.ogg" type="video/ogg"> audio store -->
-Your browser does not support the video tag.
-</video>
-          <div class="card-body">
-            <h3>Valley View Suite</h3>
-            <p class="muted">Warm minimal room with panoramic views.</p>
-            <div class="card-actions">
-              <button class="btn" id="view-3d-hero">View in 3D</button>
-              <button class="btn outline" id="add-to-trip-hero">Add to Trip</button>
+      <div class="hero-right" style="width:420px">
+        <div class="card" style="padding:0;overflow:hidden">
+          <img id="heroFeaturedImg" src="https://images.unsplash.com/photo-1723321025420-5af28984cd42?q=80&w=946&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Featured hotel" style="height:240px;object-fit:cover;width:100%">
+          <div style="padding:14px">
+            <h4 id="heroFeaturedTitle">Valley View Suite</h4>
+            <div class="muted">Luxury · 4.7 ★</div>
+            <div style="margin-top:10px;display:flex;gap:8px">
+
+              <button class="btn" id="view3DHero">View in 3D</button>
+              <button class="btn" id="addToTripHero">Add to Trip</button> 
             </div>
           </div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- CARDS -->
-    <section class="grid-section">
-      <h3>Popular Destinations</h3>
-      <div id="destGrid" class="cards"></div>
-    </section>
+  <!-- <main class="container">
+    <div class="section-row">
+      <div class="col-8">
+        <section>
+          <h2 class="section-title" style="background-color: rgba(0,0,0,0.6); color: white; padding: 8px 12px; border-radius: 6px; display: inline-block;">Popular Destinations</h2>
+          <div id="destGrid" class="cards"></div>
+        </section>
 
-    <section class="grid-section alt">
-      <h3>Rooms & Stays</h3>
-      <div id="roomGrid" class="cards"></div>
-    </section>
+        <section style="margin-top:22px">
+          <h2 class="section-title" style="background-color: rgba(0,0,0,0.6); color: white; padding: 8px 12px; border-radius: 6px; display: inline-block;">Top Hotels</h2>
+          <div id="hotelGrid" class="cards"></div>
+        </section>
 
-    <section class="grid-section">
-      <h3>Local Guides</h3>
-      <div id="guideGrid" class="cards"></div>
-    </section>
+        <section style="margin-top:22px">
+          <h2 class="section-title" style="background-color: rgba(0,0,0,0.6); color: white; padding: 8px 12px; border-radius: 6px; display: inline-block;">Local Businesses & Activities</h2>
+          <div id="businessGrid" class="cards"></div>
+        </section>
+      </div>
+
+      <aside class="col-4">
+        <h2 class="section-title" style="background-color: rgba(0,0,0,0.6); color: white; padding: 8px 12px; border-radius: 6px; display: inline-block;">Local Guides</h2>
+        <div id="guideGrid" class="list-compact"></div> -->
+<!-- 
+        <h2 class="section-title" ">Quick Map</h2>
+        <div id="map"></div>
+      </aside>
+    </div>
   </main>
 
-  <footer class="site-footer">
-    <div class="container footer-row">
-      <small>© <span id="year"></span> SafarX — demo for travel experiences</small>
-      <small class="muted">Built for explorers</small>
-    </div>
-  </footer>
-
-  <!-- CHAT WIDGET (client demo) -->
-  <div id="chatWidget" class="chat-widget" aria-hidden="true">
-    <div class="chat-header">
-      <strong>SafarX Assistant</strong>
-      <div class="chat-controls">
-        <button class="icon-btn" id="minChat" title="Minimize">−</button>
-        <button class="icon-btn" id="closeChat" title="Close">×</button>
+  <footer style="padding:30px 0;text-align:center">
+    <div class="container">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>© <span id="year"></span> SafarX</div>
+        <small class="muted">Demo — Curated images & Overpass (OSM) for businesses</small>
       </div>
     </div>
-    <div class="chat-body" id="chatBody">
-      <div class="msg bot">Hi! Ask me about destinations, budgets, or local tips.</div>
-    </div>
-    <div class="chat-input">
-      <input id="chatInput" placeholder="Try: '3-day Jaipur plan' or 'Budget 20k for Goa'">
-      <button class="btn primary" id="sendMsg">Send</button>
+  </footer> 
+  ================= DESTINATIONS ================= -->
+<section class="section" id="destinations">
+  <div class="container">
+    <h2 class="section-title">Popular Destinations</h2>
+    <div class="grid">
+      <a href="https://en.wikipedia.org/wiki/Goa" target ="_blank">
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e" alt="Goa" target="_blank" />
+        <h3>Goa</h3>
+        <p>Beaches, parties & culture.</p>
+      </div>
+      </a> 
+      <a href ="https://en.wikipedia.org/wiki/Jaipur" target ="_blank">
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1603262110263-fb0112e7cc33?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8amFpcHVyfGVufDB8fDB8fHww" alt="Jaipur" />
+        <h3>Jaipur</h3>
+        <p>The Pink City with royal heritage.</p>
+      </div>
+      </a>
+      <a href="https://en.wikipedia.org/wiki/Manali,_Himachal_Pradesh" target="_blank">
+      <div class="card">
+        <img src="manali.jpg" alt="Manali" />
+        <h3>Manali</h3>
+        <p>Hills, snow & adventure sports.</p>
+      </div>
+      </a>
     </div>
   </div>
-  <button id="chatFab" class="fab" aria-label="Open chat">💬</button>
+</section>
 
-  <!-- AUTH MODAL -->
-  <div id="authModal" class="modal" aria-hidden="true">
+<!-- ================= HOTELS ================= -->
+<section class="section" id="hotels">
+  <div class="container">
+    <h2 class="section-title">Hotels & Stays</h2>
+    <div class="grid">
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb" alt="Resort" />
+        <h3>Luxury Resorts</h3>
+        <p>5-star experiences with premium comfort.</p>
+      </div>
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1615431303449-9ad9207d05de?q=80&w=1175&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Budget" />
+        <h3>Budget Hotels</h3>
+        <p>Affordable, clean & accessible locations.</p>
+      </div>
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1673460660001-fa076c5ce41c?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aG9tZXN0YXlzfGVufDB8fDB8fHww" alt="Homestay" />
+        <h3>Homestays</h3>
+        <p>Feel at home with local hosts.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= GUIDES ================= -->
+<section class="section" id="guides">
+  <div class="container">
+    <h2 class="section-title">Local Guides</h2>
+    <div class="grid">
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9" alt="Guide 1" />
+        <h3>Ravi Kumar</h3>
+        <p>Expert in North India tours.</p>
+      </div>
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e" alt="Guide 2" />
+        <h3>Priya Sharma</h3>
+        <p>Cultural tours & heritage walks.</p>
+      </div>
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde" alt="Guide 3" />
+        <h3>Arjun Mehta</h3>
+        <p>Adventure & trekking specialist.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer class="footer">
+  <div class="container">
+    <p>© 2025 SafarX | Explore · Plan · Experience</p>
+  </div>
+</footer>
+
+  <!-- Floating action buttons -->
+  <button id="tripBtn" class="fab" title="Open trip manager">🗺️</button>
+  <button id="chatBtn" class="fab chat-fab" title="Open chat">💬</button>
+
+  <!-- Trip modal -->
+  <div id="tripModal" class="modal" role="dialog" aria-hidden="true">
     <div class="panel">
-      <header class="panel-header">
-        <strong>Local Guide — Register / Login</strong>
-        <button class="icon-btn" id="closeAuth">×</button>
-      </header>
-      <div class="panel-body">
-        <div class="auth-grid">
-          <div>
-            <h4>Create Account</h4>
-            <input id="regName" class="input" placeholder="Full name" />
-            <input id="regEmail" class="input" placeholder="Email" />
-            <input id="regPass" type="password" class="input" placeholder="Password" />
-            <input id="regCity" class="input" placeholder="City / Region" />
-            <input id="regLang" class="input" placeholder="Languages (comma separated)" />
-            <button class="btn primary" id="registerBtn">Register</button>
+      <button class="close" id="closeTrip">✕</button>
+      <h3>Trip Manager</h3>
+      <div style="display:flex;gap:14px;margin-top:12px">
+        <div style="flex:1">
+          <h4>Itinerary</h4>
+          <ul id="itinerary" style="padding:0"></ul>
+          <div style="margin-top:8px;display:flex;gap:8px">
+            <input id="placeName" placeholder="Place / Activity" style="flex:1;padding:8px;border-radius:8px;border:1px solid #eef2f7" />
+            <input id="placeDay" type="number" min="1" placeholder="Day" style="width:80px;padding:8px;border-radius:8px;border:1px solid #eef2f7" />
+            <button id="addPlaceBtn" class="btn">Add</button>
           </div>
-          <div>
-            <h4>Login</h4>
-            <input id="logEmail" class="input" placeholder="Email" />
-            <input id="logPass" type="password" class="input" placeholder="Password" />
-            <button class="btn" id="loginBtn">Login</button>
-            <div id="authStatus" class="muted small"></div>
+        </div>
+        <div style="width:260px">
+          <h4>Budget Planner</h4>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <input id="targetBudget" type="number" placeholder="Target (₹)" style="padding:8px;border-radius:8px;border:1px solid #e7eefb" />
+            <input id="spentBudget" type="number" placeholder="Spent (₹)" style="padding:8px;border-radius:8px;border:1px solid #e7eefb" />
+            <div id="budgetSummary" class="muted">Remaining: —</div>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button id="saveTrip" class="btn">Save</button>
+              <button id="clearTrip" class="btn">Clear</button>
+            </div>
+            <div style="margin-top:12px"><button id="shareTrip" class="btn">Share Trip (WhatsApp)</button></div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 3D ROOM PREVIEW -->
-  <div id="roomModal" class="modal modal-3d" aria-hidden="true">
-    <div class="panel wide">
-      <header class="panel-header">
-        <strong>Room 3D Preview</strong>
-        <button class="icon-btn" id="close3d">×</button>
-      </header>
-
-      <model-viewer id="roomViewer"
-        src="3d.jpg"
-        alt="3D room preview"
-        ar
-        ar-modes="webxr scene-viewer quick-look"
-        camera-controls
-        exposure="1"
-        shadow-intensity="1">
-      </model-viewer>
-
-      <div class="panel-body small">
-        <button class="btn" id="swap-min">Minimal</button>
-        <button class="btn" id="swap-suite">Suite</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- TRIP MANAGER -->
-  <div id="tripModal" class="modal" aria-hidden="true">
-    <div class="panel wide">
-      <header class="panel-header">
-        <strong>Trip Manager</strong>
-        <button class="icon-btn" id="closeTrip">×</button>
-      </header>
-      <div class="panel-body">
-        <div class="trip-grid">
-          <div class="trip-left">
-            <h4>Itinerary</h4>
-            <ul id="itinerary" class="itinerary"></ul>
-
-            <div class="add-row">
-              <input id="placeName" class="input" placeholder="Place / Activity" />
-              <input id="placeDay" type="number" class="input small" min="1" placeholder="Day" />
-              <button class="btn" id="addPlace">Add</button>
-            </div>
-          </div>
-
-          <div class="trip-right">
-            <h4>Budget Planner</h4>
-            <div class="budget-row">
-              <label>Target Budget (₹)</label>
-              <input id="targetBudget" type="number" class="input" placeholder="e.g., 20000" />
-            </div>
-            <div class="budget-row">
-              <label>Estimated Spent (₹)</label>
-              <input id="spentBudget" type="number" class="input" placeholder="0" />
-            </div>
-            <div class="budget-summary muted" id="budgetSummary">Remaining: —</div>
-            <div style="margin-top:10px; display:flex; gap:8px">
-              <button class="btn primary" id="saveTrip">Save Trip</button>
-              <button class="btn outline" id="clearTrip">Clear</button>
-            </div>
-          </div>
+  <!-- Chat modal -->
+  <div id="chatModal" class="modal" role="dialog" aria-hidden="true">
+    <div class="panel">
+      <button class="close" id="closeChatModal">✕</button>
+      <h3>SafarX Assistant</h3>
+      <div style="margin-top:12px">
+        <div id="chatArea" style="height:280px;overflow:auto;background:#f7fbff;padding:12px;border-radius:8px"></div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <input id="chatInput" placeholder="Ask: '3-day Goa plan' or 'Budget 20k for Jaipur'" style="flex:1;padding:10px;border-radius:8px;border:1px solid #e7eefb"/>
+          <button id="sendChat" class="btn">Send</button>
         </div>
       </div>
     </div>
   </div>
 
-  <script src="js/script.js"></script>
-  
+  <!-- Destination details modal -->
+  <div id="destModal" class="modal" role="dialog" aria-hidden="true">
+    <div class="panel">
+      <button class="close" id="closeDest">✕</button>
+      <div id="destDetails"></div>
+    </div>
+  </div>
+
+  <!-- 3D Viewer modal -->
+  <div id="threeModal" class="modal" role="dialog" aria-hidden="true">
+    <div class="panel">
+      <button class="close" id="close3D">✕</button>
+      <h3>Room AR / 3D Preview</h3>
+      <model-viewer id="roomViewer" src="https://modelviewer.dev/shared-assets/models/Shop/model.gltf"
+        alt="3D room" camera-controls auto-rotate ar ar-modes="webxr scene-viewer quick-look"
+        style="width:100%;height:420px;background:#f3f6fb;border-radius:10px;display:block;margin-top:12px"></model-viewer>
+      <div style="margin-top:10px;display:flex;gap:8px">
+        <button id="swapRoom1" class="btn">Modern</button>
+        <button id="swapRoom2" class="btn">Minimal</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* ========================
+   SafarX — Enhanced dataset
+   - 14 destinations (each 5 images)
+   - 13 hotels (each 5 images)
+   - Overpass business loader included
+   ======================== */
+
+
+
+/* -------------------------
+   CURATED DESTINATIONS (14 total)
+   Each destination has: id, name, desc, lat, lon, images (5)
+   (Images hotlinked from Unsplash for demo)
+   ------------------------- */
+const POPULAR_DESTINATIONS = [
+  // 1 Goa
+  { id:'goa', name:'Goa', desc:'Beaches, nightlife and water sports', lat:15.2993, lon:74.1240,
+    images:[
+      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1493558103817-58b2924bce98?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1504198453319-5ce911bafcde?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?q=80&w=1600&auto=format&fit=crop'
+    ]
+  },
+  // 2 Jaipur
+  { id:'jaipur', name:'Jaipur', desc:'Palaces, forts, and pink city charm', lat:26.9124, lon:75.7873,
+    images:[
+      'https://images.unsplash.com/photo-1563388145232-15ae62f8f6f7?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1549887534-4ae2b5b1f7d6?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1526481280698-1bfa2060f1d6?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1544739313-2f0b2f958d26?q=80&w=1600&auto=format&fit=crop'
+    ]
+  },
+  // 3 Munnar
+  { id:'munnar', name:'Munnar', desc:'Tea gardens and cool hills', lat:10.0889, lon:77.0595,
+    images:[
+      'https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1523413651479-597eb2da0ad6?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1429087969512-1e85aab2683d?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1600&auto=format&fit=crop'
+    ]
+  },
+  // 4 Varanasi
+  { id:'varanasi', name:'Varanasi', desc:'Ghats, temples and culture', lat:25.3176, lon:82.9739,
+    images:[
+      'https://images.unsplash.com/photo-1512486130939-bc24f6a1b0c7?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1519710164239-da123dc03ef4?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1473643068420-a02f1a1c8c19?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1471657295122-3c2e3d92f1bd?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1526481280698-1bfa2060f1d6?q=80&w=1600&auto=format&fit=crop'
+    ]
+  },
+  // 5 Agra
+  { id:'agra', name:'Agra', desc:'Taj Mahal and Mughal heritage', lat:27.1767, lon:78.0081,
+    images:[
+      'https://images.unsplash.com/photo-1526470608268-f674ce90ebd4?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1549893073-6b1d2e21f7f9?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1532375810709-2d0a6f5d3b9b?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1549887534-4ae2b5b1f7d6?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1508224890276-1f2d1b1b6fda?q=80&w=1600&auto=format&fit=crop'
+    ]
+  },
+  // 6 Ladakh
+  { id:'ladakh', name:'Leh - Ladakh', desc:'High-altitude desert and monasteries', lat:34.1526, lon:77.5771,
+    images:[
+      'https://images.unsplash.com/photo-1547483238-0c6b7f8b6f52?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1505765050184-3f53e3ca3a4b?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1467269204594-9661b134dd2b?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1501700493788-fa1a4f6f9f1f?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1549880338-65ddcdfd017b?q=80&w=1600&auto=format&fit=crop'
+    ]
+  },
+  // 7 Kerala Backwaters (Alleppey)
+  { id:'alleppey', name:'Alleppey (Alappuzha)', desc:'Backwaters, houseboats and canals', lat:9.4981, lon:76.3388,
+    images:[
+      'https://images.unsplash.com/photo-1526481280698-1bfa2060f1d6?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1501450006897-48b8b3a1b2b2?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1482192505345-5655af888cc4?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1504731239976-6f0b6f9b7a9e?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1509420316987-d4ff1bf25071?q=80&w=1600&auto=format&fit=crop'
+    ]
+  },
+  // 8 Darjeeling
+  { id:'darjeeling', name:'Darjeeling', desc:'Tea hills and Himalayan views', lat:27.0360, lon:88.2627,
+    images:[
+      'https://images.unsplash.com/photo-1508264165352-258a6a8ff93a?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1482192505345-5655af888cc4?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1482192596544-9eb7aa3f1c08?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1499346030926-9a72daac6c63?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1482192596544-9eb7aa3f1c08?q=80&w=1600&auto=format&fit=crop'
+    ]
+  },
+  // 9 Udaipur
+  { id:'udaipur', name:'Udaipur', desc:'Lakes, palaces & romantic sunsets', lat:24.5854, lon:73.7125,
+    images:[
+      'https://images.unsplash.com/photo-1549880338-65ddcdfd017b?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1505765050184-3f53e3ca3a4b?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1470770903676-69b98201ea1c?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1508265202440-65b0d7d6f5d6?q=80&w=1600&auto=format&fit=crop'
+    ]
+  },
+  // 10 Hampi
+  { id:'hampi', name:'Hampi', desc:'Ancient ruins and UNESCO heritage', lat:15.3350, lon:76.4600,
+    images:[
+      'https://images.unsplash.com/photo-1503416997304-9f6aa6d1f0d0?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1526481280698-1bfa2060f1d6?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1482192505345-5655af888cc4?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1499346030926-9a72daac6c63?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1505765050184-3f53e3ca3a4b?q=80&w=1600&auto=format&fit=crop'
+    ]
+  },
+  // 11 Shillong
+  { id:'shillong', name:'Shillong', desc:'Waterfalls & hills', lat:25.5788, lon:91.8933,
+    images:[
+      'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1494783367193-149034c05e8f?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1600&auto=format&fit=crop'
+    ]
+  },
+  // 12 Rann of Kutch
+  { id:'kutch', name:'Rann of Kutch', desc:'Salt desert & white landscapes', lat:23.7333, lon:70.7667,
+    images:[
+      'https://images.unsplash.com/photo-1509228468518-180dd4864904?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1493558103817-58b2924bce98?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1526481280698-1bfa2060f1d6?q=80&w=1600&auto=format&fit=crop'
+    ]
+  },
+  // 13 Andaman (Havelock)
+  { id:'andaman', name:'Havelock Island (Andaman)', desc:'Scuba, beaches, coral reefs', lat:11.9496, lon:92.9882,
+    images:[
+      'https://images.unsplash.com/photo-1505765050184-3f53e3ca3a4b?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1493558103817-58b2924bce98?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1504198453319-5ce911bafcde?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1600&auto=format&fit=crop'
+    ]
+  },
+  // 14 Kodaikanal
+  { id:'kodaikanal', name:'Kodaikanal', desc:'Hill station with lakes & trails', lat:10.2381, lon:77.4892,
+    images:[
+      'https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1482192505345-5655af888cc4?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1499346030926-9a72daac6c63?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1523413651479-597eb2da0ad6?q=80&w=1600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1508264165352-258a6a8ff93a?q=80&w=1600&auto=format&fit=crop'
+    ]
+  }
+];
+
+/* -------------------------
+   HOTELS: 13 total (3 base + 10 new)
+   Each hotel has id,name,price,rating,imgGallery (5)
+   ------------------------- */
+const TOP_HOTELS = [
+  // original 3
+  { id:'h1', name:'Valley View Suite', price:6000, rating:4.7, images:[
+      'https://images.unsplash.com/photo-1501117716987-c8e2a3b32f88?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1505691723518-36a2f32aa5a7?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1501117716987-c8e2a3b32f88?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=1200&auto=format&fit=crop'
+    ] },
+  { id:'h2', name:'Beachside Bungalow', price:12000, rating:4.8, images:[
+      'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1501117716987-c8e2a3b32f88?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1493809842364-78817add7ffb?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=1200&auto=format&fit=crop'
+    ] },
+  { id:'h3', name:'Heritage Inn', price:4000, rating:4.3, images:[
+      'https://images.unsplash.com/photo-1576675782565-45a1a61b1371?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1505691723518-36a2f32aa5a7?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1493809842364-78817add7ffb?q=80&w=1200&auto=format&fit=crop'
+    ] },
+  // +10 new hotels
+  { id:'h4', name:'Royal Palace Hotel', price:8500, rating:4.6, images:[
+      'https://images.unsplash.com/photo-1549187774-b4e9b0445b5b?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1475855581691-2f3b7f5b9d6b?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1541544181255-6d2d3d4b2bbb?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1505765050184-3f53e3ca3a4b?q=80&w=1200&auto=format&fit=crop'
+    ] },
+  { id:'h5', name:'Mountain View Resort', price:7000, rating:4.5, images:[
+      'https://images.unsplash.com/photo-1505691723518-36a2f32aa5a7?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1493809842364-78817add7ffb?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1541544181255-6d2d3d4b2bbb?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1501117716987-c8e2a3b32f88?q=80&w=1200&auto=format&fit=crop'
+    ] },
+  { id:'h6', name:'City Central Hotel', price:4500, rating:4.2, images:[
+      'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1493809842364-78817add7ffb?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1549187774-b4e9b0445b5b?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1505765050184-3f53e3ca3a4b?q=80&w=1200&auto=format&fit=crop'
+    ] },
+  { id:'h7', name:'Beachfront Suites', price:11000, rating:4.9, images:[
+      'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1493558103817-58b2924bce98?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1504198453319-5ce911bafcde?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1526481280698-1bfa2060f1d6?q=80&w=1200&auto=format&fit=crop'
+    ] },
+  { id:'h8', name:'Riverside Retreat', price:8200, rating:4.4, images:[
+      'https://images.unsplash.com/photo-1508264165352-258a6a8ff93a?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1505691723518-36a2f32aa5a7?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1549887534-4ae2b5b1f7d6?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1505765050184-3f53e3ca3a4b?q=80&w=1200&auto=format&fit=crop'
+    ] },
+  { id:'h9', name:'Palace Heritage', price:9500, rating:4.6, images:[
+      'https://images.unsplash.com/photo-1549187774-b4e9b0445b5b?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1505673542671-624f68b8f3c4?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1501117716987-c8e2a3b32f88?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1493809842364-78817add7ffb?q=80&w=1200&auto=format&fit=crop'
+    ] },
+  { id:'h10', name:'Forest Hideaway', price:6800, rating:4.5, images:[
+      'https://images.unsplash.com/photo-1505765050184-3f53e3ca3a4b?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1523413651479-597eb2da0ad6?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1499346030926-9a72daac6c63?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=1200&auto=format&fit=crop'
+    ] },
+  { id:'h11', name:'Boutique Inn', price:5200, rating:4.1, images:[
+      'https://images.unsplash.com/photo-1493809842364-78817add7ffb?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1549187774-b4e9b0445b5b?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1505673542671-624f68b8f3c4?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1508264165352-258a6a8ff93a?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1501117716987-c8e2a3b32f88?q=80&w=1200&auto=format&fit=crop'
+    ] },
+  { id:'h12', name:'Skyline Hotel', price:9700, rating:4.7, images:[
+      'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1541544181255-6d2d3d4b2bbb?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1499346030926-9a72daac6c63?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1505765050184-3f53e3ca3a4b?q=80&w=1200&auto=format&fit=crop'
+    ] },
+  { id:'h13', name:'Seaside Resort', price:12500, rating:4.9, images:[
+      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1504198453319-5ce911bafcde?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1493558103817-58b2924bce98?q=80&w=1200&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1526481280698-1bfa2060f1d6?q=80&w=1200&auto=format&fit=crop'
+    ] }
+];
+
+/* -------------------------
+   Guides sample
+   ------------------------- */
+const DEFAULT_GUIDES = [
+  { id:'g1', name:'Asha Menon', city:'Alappuzha', langs:['Malayalam','English'], rating:4.8, phone:'+91-9XXXXXXXXX' },
+  { id:'g2', name:'Ravi Singh', city:'Jaipur', langs:['Hindi','English'], rating:4.6, phone:'+91-8XXXXXXXXX' },
+  { id:'g3', name:'Priya Patel', city:'Vadodara', langs:['Gujarati','English'], rating:4.5, phone:'+91-7XXXXXXXXX' }
+];
+
+/* -------------------------
+   Overpass query function to fetch local businesses (OSM)
+   ------------------------- */
+async function fetchBusinessesOverpass(lat, lon, radius = 2500) {
+  const overpassUrl = 'https://overpass-api.de/api/interpreter';
+  const query = `
+    [out:json][timeout:25];
+    (
+      node(around:${radius},${lat},${lon})[amenity~"restaurant|cafe|bar|fast_food"];
+      node(around:${radius},${lat},${lon})[tourism~"museum|attraction|viewpoint|gallery|zoo|theme_park|information"];
+      node(around:${radius},${lat},${lon})[shop];
+      node(around:${radius},${lat},${lon})[tourism=hotel];
+      way(around:${radius},${lat},${lon})[amenity~"restaurant|cafe|bar|fast_food"];
+      way(around:${radius},${lat},${lon})[tourism~"museum|attraction|viewpoint|gallery|zoo|theme_park|information"];
+      way(around:${radius},${lat},${lon})[shop];
+      way(around:${radius},${lat},${lon})[tourism=hotel];
+    );
+    out center 50;
+  `;
+  try {
+    const resp = await fetch(overpassUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+      body: 'data=' + encodeURIComponent(query)
+    });
+    if (!resp.ok) throw new Error('Overpass request failed');
+    const json = await resp.json();
+    const items = (json.elements || []).map(el => {
+      const name = (el.tags && (el.tags.name || el.tags.brand)) || 'Unnamed';
+      const type = el.tags && (el.tags.amenity || el.tags.tourism || el.tags.shop) || 'business';
+      const addr = [el.tags && el.tags['addr:street'], el.tags && el.tags['addr:city'], el.tags && el.tags['addr:postcode']].filter(Boolean).join(', ');
+      const latResolved = el.lat || (el.center && el.center.lat) || null;
+      const lonResolved = el.lon || (el.center && el.center.lon) || null;
+      return { id: el.id, name, type, address: addr || '', lat: latResolved, lon: lonResolved };
+    });
+    const unique = Array.from(new Map(items.map(i=>[i.id,i])).values());
+    return unique;
+  } catch (err) {
+    console.warn('Overpass error', err);
+    return [];
+  }
+}
+
+/* -------------------------
+   Renderers: destinations, hotels, businesses, guides
+   ------------------------- */
+function renderDestinations() {
+  const grid = $('#destGrid');
+  grid.innerHTML = POPULAR_DESTINATIONS.map(d => `
+    <div class="card" data-id="${d.id}">
+      <img src="${d.images[0]}" alt="${d.name}">
+      <h4>${d.name}</h4>
+      <div class="muted">${d.desc}</div>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn btn-view" data-id="${d.id}">Details</button>
+        <button class="btn btn-add" data-name="${d.name}">Add to Trip</button>
+        <button class="btn btn-businesses" data-id="${d.id}">Businesses</button>
+      </div>
+    </div>
+  `).join('');
+  $$('.btn-view').forEach(b => b.onclick = e => showDestinationDetails(e.currentTarget.dataset.id));
+  $$('.btn-add').forEach(b => b.onclick = e => addToTrip(e.currentTarget.dataset.name));
+  $$('.btn-businesses').forEach(b => b.onclick = e => {
+    const d = POPULAR_DESTINATIONS.find(x => x.id === e.currentTarget.dataset.id);
+    if (d) loadLocalBusinessesForDestination(d);
+  });
+}
+
+function renderHotels() {
+  $('#hotelGrid').innerHTML = TOP_HOTELS.map(h => `
+    <div class="card">
+      <img src="${h.images[0]}" alt="${h.name}">
+      <h4>${h.name}</h4>
+      <div class="muted">₹${h.price} • ${h.rating} ★</div>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn btn-3d-hotel" data-id="${h.id}">View 3D</button>
+        <button class="btn btn-add-hotel" data-name="${h.name}">Add</button>
+        <button class="btn btn-gallery-hotel" data-id="${h.id}">Gallery</button>
+      </div>
+    </div>
+  `).join('');
+  $$('.btn-3d-hotel').forEach(b => b.onclick = () => open3DViewer());
+  $$('.btn-add-hotel').forEach(b => e => addToTrip(e.currentTarget.dataset.name));
+  $$('.btn-gallery-hotel').forEach(b => b.onclick = e => showHotelGallery(e.currentTarget.dataset.id));
+}
+
+function renderGuides() {
+  const guides = loadGuides();
+  $('#guideGrid').innerHTML = guides.map(g => `
+    <div class="guide-card">
+      <img class="guide-avatar" src="https://ui-avatars.com/api/?name=${encodeURIComponent(g.name)}&background=0D8ABC&color=fff" alt="${g.name}">
+      <div>
+        <div style="font-weight:700">${g.name}</div>
+        <small class="muted">${g.city} • ${g.langs || g.lang?.join(', ') || 'English'}</small>
+        <small class="muted">Rating: ${g.rating || '4.5'} ★</small>
+      </div>
+      <div style="margin-left:auto">
+        <button class="btn" data-contact-guide="${g.id}">Contact</button>
+      </div>
+    </div>
+  `).join('');
+  $$('[data-contact-guide]').forEach(b => b.onclick = e => {
+    const id = e.currentTarget.dataset.contactGuide;
+    const g = loadGuides().find(x => x.id === id);
+    if (g) alert(`Contact ${g.name}\nPhone: ${g.phone || 'N/A'}\nEmail: ${g.email || 'N/A'}`);
+  });
+}
+
+function renderBusinesses(list = []) {
+  const grid = $('#businessGrid');
+  if (!list || !list.length) {
+    grid.innerHTML = `<div class="muted">No businesses loaded yet. Click "Businesses" on a destination or search a place.</div>`;
+    return;
+  }
+  grid.innerHTML = list.map(b => `
+    <div class="card">
+      <h4>${b.name}</h4>
+      <div class="muted">${b.type} • ${b.address || ''}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+        <div class="muted">OSM id: ${b.id}</div>
+        <div><button class="btn" data-contact="${b.id}">Contact</button></div>
+      </div>
+    </div>
+  `).join('');
+  $$('[data-contact]').forEach(btn => btn.onclick = e => alert('Contact placeholder for business id: ' + e.currentTarget.dataset.contact));
+}
+
+/* ---------- details modal for destination ---------- */
+function showDestinationDetails(id) {
+  const d = POPULAR_DESTINATIONS.find(x => x.id === id);
+  if (!d) return;
+  const destDetails = $('#destDetails');
+  destDetails.innerHTML = `
+    <h2>${d.name}</h2>
+    <div class="muted">${d.desc}</div>
+    <div class="gallery">${d.images.map(src=>`<img src="${src}" alt="${d.name}">`).join('')}</div>
+    <div style="margin-top:12px;display:flex;gap:8px">
+      <button class="btn" id="destBusinessesBtn">Load Local Businesses</button>
+      <button class="btn" id="destToTripBtn">Add to Trip</button>
+    </div>
+    <div id="destBusinessList" style="margin-top:12px"></div>
+  `;
+  $('#destModal').classList.add('show');
+  $('#destModal').setAttribute('aria-hidden','false');
+  $('#destBusinessesBtn').onclick = () => loadLocalBusinessesForDestination(d, '#destBusinessList');
+  $('#destToTripBtn').onclick = () => { addToTrip(d.name); alert('Added to trip'); };
+}
+$('#closeDest').onclick = () => { $('#destModal').classList.remove('show'); $('#destModal').setAttribute('aria-hidden','true'); };
+
+/* ---------- hotel gallery ---------- */
+function showHotelGallery(hotelId) {
+  const h = TOP_HOTELS.find(x => x.id === hotelId);
+  if (!h) return;
+  const destDetails = $('#destDetails');
+  $('#destModal').classList.add('show');
+  $('#destModal').setAttribute('aria-hidden','false');
+  $('#destDetails').innerHTML = `
+    <h2>${h.name}</h2>
+    <div class="muted">₹${h.price} • ${h.rating} ★</div>
+    <div class="gallery">${h.images.map(s=>`<img src="${s}" alt="${h.name}">`).join('')}</div>
+    <div style="margin-top:12px"><button class="btn" id="addHotelToTrip">Add Hotel to Trip</button></div>
+  `;
+  $('#addHotelToTrip').onclick = () => { addToTrip(h.name); alert('Hotel added to trip'); };
+}
+
+/* ---------- load local businesses for a destination via Overpass ---------- */
+async function loadLocalBusinessesForDestination(dest, targetSelector = '#businessGrid') {
+  const target = document.querySelector(targetSelector);
+  if (!dest) return;
+  target && (target.innerHTML = `<div class="muted">Loading businesses for ${dest.name} (Overpass)...</div>`);
+  const items = await fetchBusinessesOverpass(dest.lat, dest.lon, 2500);
+  if (targetSelector === '#businessGrid') renderBusinesses(items);
+  else {
+    const html = (items.length ? items.map(b => `<div style="padding:8px;background:#fff;border-radius:8px;margin-bottom:8px"><strong>${b.name}</strong><div class="muted">${b.type} • ${b.address}</div></div>`) : `<div class="muted">No businesses found</div>`);
+    document.querySelector(targetSelector).innerHTML = html;
+  }
+}
+
+/* ---------- Guides storage ---------- */
+function loadGuides(){ return JSON.parse(localStorage.getItem('safarx_guides') || '[]').length ? JSON.parse(localStorage.getItem('safarx_guides')) : DEFAULT_GUIDES; }
+function saveGuide(g){ const arr = JSON.parse(localStorage.getItem('safarx_guides') || '[]'); arr.push(g); localStorage.setItem('safarx_guides', JSON.stringify(arr)); }
+
+/* ---------- Trip manager (localStorage) ---------- */
+function getTrip(){ return JSON.parse(localStorage.getItem('safarx_trip') || '{"places":[],"budget":{}}'); }
+function saveTripLocal(t){ localStorage.setItem('safarx_trip', JSON.stringify(t)); }
+function addToTrip(name){
+  const trip = getTrip();
+  trip.places = trip.places || [];
+  trip.places.push({ place: name, day: trip.places.length + 1 });
+  saveTripLocal(trip);
+  renderItinerary();
+}
+function renderItinerary(){
+  const ul = $('#itinerary');
+  const trip = getTrip();
+  ul.innerHTML = (trip.places || []).map((p, idx) => `<li style="list-style:none;margin-bottom:8px"><div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:#fbfdff;border-radius:8px"><div><strong>Day ${p.day}</strong> — ${p.place}</div><div><button class="btn" data-remove="${idx}">Remove</button></div></div></li>`).join('');
+  $$('[data-remove]').forEach(b => b.onclick = e => {
+    const idx = +e.currentTarget.dataset.remove;
+    const t = getTrip(); t.places.splice(idx,1); saveTripLocal(t); renderItinerary();
+  });
+  updateBudgetSummary();
+}
+function updateBudgetSummary(){
+  const t = getTrip(); const target = (t.budget && t.budget.target) || 0; const spent = (t.budget && t.budget.spent) || 0; const remaining = target - spent;
+  $('#budgetSummary').textContent = target ? `Remaining: ₹${remaining.toLocaleString()} (Target ₹${target.toLocaleString()}, Spent ₹${spent.toLocaleString()})` : 'No budget set';
+  $('#targetBudget').value = target || '';
+  $('#spentBudget').value = spent || '';
+}
+
+/* ---------- 3D viewer ---------- */
+function open3DViewer(){ $('#threeModal').classList.add('show'); $('#threeModal').setAttribute('aria-hidden','false'); }
+$('#close3D').onclick = () => { $('#threeModal').classList.remove('show'); $('#threeModal').setAttribute('aria-hidden','true'); };
+$('#swapRoom1').onclick = () => document.getElementById('roomViewer').setAttribute('src','https://modelviewer.dev/shared-assets/models/Astronaut.glb');
+$('#swapRoom2').onclick = () => document.getElementById('roomViewer').setAttribute('src','https://modelviewer.dev/shared-assets/models/Shop/model.gltf');
+
+/* ---------- Map ---------- */
+let map, markers = [];
+function initMap(){
+  if (map) return;
+  map = L.map('map', { scrollWheelZoom:false }).setView([20.5937,78.9629],5);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
+  addMarkers(POPULAR_DESTINATIONS);
+}
+function addMarkers(list){
+  if(!map) initMap();
+  markers.forEach(m => map.removeLayer(m));
+  markers = [];
+  list.forEach(d => {
+    const m = L.marker([d.lat,d.lon]).addTo(map).bindPopup(`<strong>${d.name}</strong><div>${d.desc}</div>`);
+    markers.push(m);
+  });
+}
+
+/* ---------- Weather placeholder (use OpenWeather key to enable) ---------- */
+const OPENWEATHER_API_KEY = 'YOUR_OPENWEATHER_API_KEY'; // replace if needed
+async function fetchWeather(city){
+  if (!OPENWEATHER_API_KEY || OPENWEATHER_API_KEY === 'YOUR_OPENWEATHER_API_KEY') {
+    $('#weatherMain').textContent = 'Add OpenWeather key for live weather';
+    return;
+  }
+  try {
+    const r = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&units=metric&appid=${OPENWEATHER_API_KEY}`);
+    if(!r.ok) { $('#weatherMain').textContent = 'Weather not found'; return; }
+    const data = await r.json();
+    $('#weatherMain').textContent = `${data.weather[0].main} • ${data.main.temp}°C`;
+  } catch(e) { $('#weatherMain').textContent = 'Weather error'; }
+}
+
+/* ---------- Assistant (simple rule-based) ---------- */
+function assistantReply(text){
+  const t = text.toLowerCase();
+  if(/hi|hello|hey/.test(t)) return 'Hello from SafarX! Ask me for itineraries, hotels, or local businesses.';
+  if(t.includes('3-day') || t.includes('3 day')) return '3-day sample: Day1 local sights, Day2 activity & food, Day3 relax & shopping.';
+  if(t.includes('budget')) return 'Open Trip Manager (🗺️) to set target & track spent amounts.';
+  return 'Try: "3-day Goa plan" or "Weather Jaipur".';
+}
+
+/* ---------- Chat helpers ---------- */
+function postUserChat(text) {
+  const area = $('#chatArea');
+  const user = document.createElement('div'); user.style.marginBottom='10px';
+  user.innerHTML = `<div style="text-align:right"><div style="display:inline-block;background:#e6f0ff;padding:8px;border-radius:8px">${escapeHtml(text)}</div></div>`;
+  area.appendChild(user); area.scrollTop = area.scrollHeight;
+  setTimeout(()=> {
+    const bot = assistantReply(text);
+    const bubble = document.createElement('div'); bubble.style.marginBottom='10px';
+    bubble.innerHTML = `<div style="text-align:left"><div style="display:inline-block;background:#fff;padding:8px;border-radius:8px;box-shadow:var(--shadow)">${escapeHtml(bot)}</div></div>`;
+    area.appendChild(bubble);
+    area.scrollTop = area.scrollHeight;
+  }, 400);
+}
+
+/* ---------- Utilities ---------- */
+function escapeHtml(s){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+
+/* ---------- Events & initial render ---------- */
+document.addEventListener('DOMContentLoaded', () => {
+  // hero default bg
+  $('#heroBg').style.backgroundImage = `url("${POPULAR_DESTINATIONS[0].images[0]}")`;
+  $('#heroFeaturedImg').src = TOP_HOTELS[0].images[0];
+  $('#heroFeaturedTitle').textContent = TOP_HOTELS[0].name;
+
+  renderDestinations();
+  renderHotels();
+  renderGuides();
+  renderBusinesses([]);
+
+  initMap();
+
+  $('#showMapBtn').onclick = () => document.getElementById('map').scrollIntoView({behavior:'smooth'});
+
+  $('#searchBtn').onclick = () => {
+    const q = $('#where').value.trim();
+    if(!q) return alert('Enter a destination to search (demo).');
+    fetchWeather(q);
+    const found = POPULAR_DESTINATIONS.find(d => d.name.toLowerCase() === q.toLowerCase());
+    if(found && map) map.setView([found.lat, found.lon],9);
+    if(found) loadLocalBusinessesForDestination(found);
+    else alert('Search demo: try exact name from curated list (e.g., Goa, Jaipur, Munnar).');
+  };
+
+  // trip
+  $('#tripBtn').onclick = () => { $('#tripModal').classList.add('show'); renderItinerary(); $('#tripModal').setAttribute('aria-hidden','false'); };
+  $('#closeTrip').onclick = () => { $('#tripModal').classList.remove('show'); $('#tripModal').setAttribute('aria-hidden','true'); };
+  $('#addPlaceBtn').onclick = () => { const name = $('#placeName').value.trim(); const day = parseInt($('#placeDay').value || '1',10); if(!name) return alert('Add a place'); const t = getTrip(); t.places = t.places || []; t.places.push({place:name, day}); saveTripLocal(t); $('#placeName').value=''; $('#placeDay').value=''; renderItinerary(); };
+  $('#saveTrip').onclick = () => { const t = getTrip(); t.budget = { target: parseFloat($('#targetBudget').value||0), spent: parseFloat($('#spentBudget').value||0) }; saveTripLocal(t); updateBudgetSummary(); alert('Trip saved locally'); };
+  $('#clearTrip').onclick = () => { if(confirm('Clear trip?')) { localStorage.removeItem('safarx_trip'); renderItinerary(); updateBudgetSummary(); } };
+  $('#shareTrip').onclick = () => { const t = getTrip(); const text = `My trip: ${(t.places||[]).map(x=>`Day ${x.day}:${x.place}`).join(' | ')} - SafarX demo`; window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`,'_blank'); };
+
+  // chat
+  $('#chatBtn').onclick = () => { $('#chatModal').classList.add('show'); $('#chatModal').setAttribute('aria-hidden','false'); };
+  $('#closeChatModal').onclick = () => { $('#chatModal').classList.remove('show'); $('#chatModal').setAttribute('aria-hidden','true'); };
+  $('#sendChat').onclick = () => { const v = $('#chatInput').value.trim(); if(!v) return; postUserChat(v); $('#chatInput').value=''; };
+  $('#view3DHero').onclick = () => open3DViewer();
+  $('#addToTripHero').onclick = () => addToTrip('Valley View Suite');
+
+  $('#loginBtn').onclick = () => {
+    const email = prompt('Enter guide email for demo registration');
+    if(!email) return;
+    const name = prompt('Your name?');
+    const city = prompt('City / region?');
+    const langs = prompt('Languages (comma separated)?', 'English');
+    const g = { id:'g'+Date.now(), name: name||email.split('@')[0], email, city, langs, phone:'' };
+    saveGuide(g); renderGuides(); alert('Registered guide (demo).');
+  };
+}); // DOMContentLoaded
+
+</script>
 </body>
 </html>
