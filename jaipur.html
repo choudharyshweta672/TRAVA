@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jaipur Explorer</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <!-- Animate.css for fade/slide effects -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <!-- AOS for scroll animations -->
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css" />
+  <style>
+    :root {
+      --primary: #ff6b6b;
+      --secondary: #f3e9e1;
+      --accent: #ffb347;
+      --bg: #fdfdfd;
+      --card-bg: #fff7f0;
+      --shadow: 0 4px 16px rgba(0,0,0,0.08);
+      --radius: 12px;
+      --font-main: 'Poppins', 'Inter', Arial, sans-serif;
+      --transition: 0.3s cubic-bezier(.4,0,.2,1);
+    }
+    html {
+      scroll-behavior: smooth;
+    }
+    body {
+      font-family: var(--font-main);
+      margin: 0;
+      background: var(--bg);
+      color: #1e293b;
+      min-height: 100vh;
+    }
+    header {
+      background: linear-gradient(90deg, var(--primary) 70%, var(--accent) 100%);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: var(--shadow);
+      transition: background var(--transition);
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      font-size: 1.7rem;
+      letter-spacing: 1px;
+    }
+    .logo img {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      background: #fff;
+    }
+    header input {
+      padding: 0.7rem 1rem;
+      border: none;
+      border-radius: var(--radius);
+      width: 260px;
+      font-size: 1rem;
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      transition: box-shadow var(--transition), background var(--transition);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    header input:focus {
+      outline: none;
+      background: rgba(255,255,255,0.25);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 2rem;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: auto;
+    }
+    @media (max-width: 900px) {
+      main {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        padding: 1rem;
+      }
+      aside {
+        margin-top: 2rem;
+      }
+    }
+    section, aside {
+      width: 100%;
+    }
+    #map {
+      height: 400px;
+      border-radius: var(--radius);
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow);
+      transition: box-shadow var(--transition);
+    }
+    .card {
+      background: linear-gradient(135deg, var(--card-bg) 90%, #fff 100%);
+      padding: 1.5rem 1rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 1.5rem;
+      transition: transform var(--transition), box-shadow var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .card:hover {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    }
+    .card h2 {
+      margin-top: 0;
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--primary);
+      letter-spacing: 0.5px;
+    }
+    .places {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.2rem;
+    }
+    .place {
+      display: flex;
+      gap: 0.8rem;
+      border-radius: var(--radius);
+      padding: 0.7rem;
+      background: var(--secondary);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      transition: transform var(--transition), box-shadow var(--transition);
+      align-items: flex-start;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    .place:hover {
+      transform: scale(1.03) translateY(-2px);
+      box-shadow: 0 6px 24px rgba(255,107,107,0.12);
+      background: linear-gradient(90deg, #fff7f0 80%, #ffe5d0 100%);
+    }
+    .place-img-container {
+      flex: 0 0 auto;
+      width: 100px;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border-radius: 8px;
+      background: #f3e9e1;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      transition: box-shadow var(--transition);
+    }
+    .place img {
+      width: 100px;
+      height: 70px;
+      object-fit: cover;
+      border-radius: 8px;
+      display: block;
+      transition: transform var(--transition);
+    }
+    .place:hover .place-img-container img {
+      transform: scale(1.08);
+      box-shadow: 0 4px 16px rgba(255,107,107,0.18);
+    }
+    .place h3 {
+      margin: 0 0 0.3rem 0;
+      font-size: 1.1rem;
+      color: #d7263d;
+      font-weight: 600;
+    }
+    .place p {
+      margin: 0 0 0.5rem 0;
+      font-size: 0.98rem;
+      color: #444;
+    }
+    .place button {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 0.4rem 1rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(255,107,107,0.08);
+      transition: background var(--transition), transform var(--transition);
+      margin-top: 0.2rem;
+    }
+    .place button:hover {
+      background: var(--accent);
+      color: #d7263d;
+      transform: scale(1.07);
+    }
+
+    .guides .guide {
+      border: 1px solid #eee;
+      padding: 0.7rem;
+      border-radius: 8px;
+      margin-bottom: 0.7rem;
+      background: #fafafa;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      transition: box-shadow var(--transition), transform var(--transition);
+      position: relative;
+    }
+    .guides .guide:hover {
+      box-shadow: 0 6px 24px rgba(255,107,107,0.10);
+      transform: scale(1.03);
+      background: #fff7f0;
+    }
+    .guides .guide a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color var(--transition);
+    }
+    .guides .guide a:hover {
+      color: var(--accent);
+      text-decoration: underline;
+    }
+
+    .gallery { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
+      gap: 0.8rem; 
+    }
+    .gallery img { 
+      width: 180px; 
+      height: 120px; 
+      border-radius: 8px; 
+      object-fit: cover; 
+      display: block; 
+      margin: auto; 
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: transform var(--transition), box-shadow var(--transition);
+      cursor: pointer;
+    }
+    .gallery img:hover { 
+      transform: scale(1.08);
+      box-shadow: 0 8px 32px rgba(255,107,107,0.18);
+      z-index: 2;
+    }
+
+    /* Lightbox styles */
+    .lightbox {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(30,41,59,0.85);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      animation: fadeIn 0.4s;
+    }
+    .lightbox-content {
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 1rem;
+      max-width: 90vw;
+      max-height: 90vh;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeInUp 0.5s;
+    }
+    .lightbox-content img {
+      max-width: 600px;
+      max-height: 70vh;
+      border-radius: 8px;
+      object-fit: contain;
+      margin-bottom: 0.5rem;
+      box-shadow: 0 4px 24px rgba(255,107,107,0.18);
+    }
+    .lightbox-close {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 0.4rem 1rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      transition: background var(--transition);
+    }
+    .lightbox-close:hover {
+      background: var(--accent);
+      color: #d7263d;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(40px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+
+    /* Booking Form */
+    form {
+      margin-top: 0.5rem;
+    }
+    .form-group {
+      position: relative;
+      margin-bottom: 1.2rem;
+    }
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 0.8rem 0.7rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+      background: #fff;
+      transition: border-color var(--transition), box-shadow var(--transition);
+      outline: none;
+    }
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 2px 8px rgba(255,107,107,0.10);
+    }
+    .form-group label {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #fff;
+      padding: 0 0.3rem;
+      color: #888;
+      font-size: 0.98rem;
+      pointer-events: none;
+      transition: top var(--transition), font-size var(--transition), color var(--transition);
+    }
+    .form-group input:focus + label,
+    .form-group input:not(:placeholder-shown) + label,
+    .form-group select:focus + label,
+    .form-group select:not([value=""]) + label {
+      top: -0.7rem;
+      font-size: 0.85rem;
+      color: var(--primary);
+      background: #fff;
+    }
+    form button {
+      background: var(--primary);
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      padding: 0.7rem 1.2rem;
+      font-size: 1.05rem;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(255,107,107,0.10);
+      transition: background var(--transition), transform var(--transition);
+      margin-top: 0.5rem;
+    }
+    form button:hover {
+      background: var(--accent);
+      color: #d7263d;
+      transform: scale(1.05);
+    }
+    #bookingMsg {
+      color: green;
+      font-weight: bold;
+      margin-top: 0.7rem;
+      font-size: 1.05rem;
+      transition: opacity var(--transition);
+    }
+
+    footer {
+      background: linear-gradient(90deg, var(--primary) 70%, var(--accent) 100%);
+      text-align: center;
+      padding: 1.2rem;
+      color: white;
+      margin-top: 2rem;
+      font-size: 1.05rem;
+      letter-spacing: 0.5px;
+      border-radius: var(--radius) var(--radius) 0 0;
+      box-shadow: var(--shadow);
+    }
+
+    /* Modal */
+    .modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(30,41,59,0.65);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1500;
+      animation: fadeIn 0.4s;
+    }
+    .modal-content {
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      max-width: 600px;
+      width: 100%;
+      box-shadow: var(--shadow);
+      animation: fadeInUp 0.5s;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .modal-content img {
+      width: 100%;
+      max-width: 400px;
+      border-radius: 8px;
+      margin-top: 0.5rem;
+      box-shadow: 0 4px 24px rgba(255,107,107,0.18);
+      object-fit: cover;
+      transition: transform var(--transition);
+    }
+    .modal-content img:hover {
+      transform: scale(1.04);
+    }
+    #closeModal {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 0.4rem 1rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+    #closeModal:hover {
+      background: var(--accent);
+      color: #d7263d;
+    }
+
+    /* Quick Facts & Emergency */
+    .card ul {
+      padding-left: 1.2rem;
+      margin: 0.5rem 0 0 0;
+      font-size: 1rem;
+    }
+    .card li {
+      margin-bottom: 0.5rem;
+      color: #444;
+    }
+
+    /* Scroll Animations */
+    [data-aos] {
+      opacity: 0;
+      transition-property: opacity, transform;
+    }
+    [data-aos].aos-animate {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <img src="hawa.avif" alt="Jaipur Logo">
+      Jaipur Explorer
+    </div>
+    <input id="search" type="text" placeholder="Search places (e.g. fort, palace)">
+  </header>
+
+  <main>
+    <section>
+      <!-- Fixed Map -->
+      <div id="map" data-aos="fade-up"></div>
+
+      <div class="card" data-aos="fade-up" data-aos-delay="100">
+        <h2>Popular Places</h2>
+        <div id="places" class="places"></div>
+      </div>
+      <div class="card" data-aos="fade-up" data-aos-delay="200">
+        <h2>Food, Culture & Traditions</h2>
+        <div class="gallery">
+          <img src="Dal-Bati-Churma-3333.jpg" alt="Rajasthani Thali">
+          <img src="jp festival.webp" alt="Jaipur Festival">
+          <img src="jp dance.jpg" alt="Traditional Dance">
+        </div>
+      </div>
+      <div class="card" data-aos="fade-up" data-aos-delay="300">
+        <h2>Book Your Experience</h2>
+        <form id="bookingForm" autocomplete="off">
+          <div class="form-group">
+            <input type="text" id="name" placeholder=" " required>
+            <label for="name">Full Name</label>
+          </div>
+          <div class="form-group">
+            <select id="service" required>
+              <option value="" disabled selected hidden></option>
+              <option value="hotel">Hotel Booking</option>
+              <option value="cab">Cab Booking</option>
+              <option value="guide">Hire Local Guide</option>
+            </select>
+            <label for="service">Select Service</label>
+          </div>
+          <div class="form-group">
+            <input type="date" id="date" placeholder=" " required>
+            <label for="date">Date</label>
+          </div>
+          <div class="form-group">
+            <input type="tel" id="contact" placeholder=" " required>
+            <label for="contact">Contact Number</label>
+          </div>
+          <button type="submit">Book Now</button>
+        </form>
+        <p id="bookingMsg"></p>
+      </div>
+    </section>
+
+    <aside>
+      <div class="card guides" data-aos="fade-left" data-aos-delay="100">
+        <h2>Local Guides</h2>
+        <div id="guides"></div>
+      </div>
+      <div class="card" data-aos="fade-left" data-aos-delay="200">
+        <h2>Jaipur Quick Facts</h2>
+        <ul>
+          <li><strong>Nick Name:</strong> Pink City</li>
+          <li><strong>Famous For:</strong> Forts, Palaces, Handicrafts</li>
+          <li><strong>Festivals:</strong> Teej, Jaipur Literature Festival</li>
+        </ul>
+      </div>
+      <div class="card" data-aos="fade-left" data-aos-delay="300">
+        <h2>Emergency Contacts</h2>
+        <ul>
+          <li>Police: 100</li>
+          <li>Ambulance: 102</li>
+          <li>Tourist Helpline: +91-141-XXXXXXX</li>
+        </ul>
+      </div>
+    </aside>
+  </main>
+
+  <footer>
+    © <span id="year"></span> Jaipur Explorer | Built with ❤️
+  </footer>
+
+  <!-- Modal -->
+  <div id="modal" class="modal" style="display: none;">
+    <div class="modal-content animate__animated animate__fadeInUp">
+      <button id="closeModal">Close</button>
+      <h2 id="modalTitle"></h2>
+      <img id="modalImage" src="" alt="">
+      <p id="modalDesc"></p>
+      <p><strong>Best time:</strong> <span id="modalTime"></span></p>
+    </div>
+  </div>
+
+  <!-- Lightbox -->
+  <div id="lightbox" class="lightbox" style="display:none;">
+    <div class="lightbox-content">
+      <img id="lightboxImg" src="" alt="">
+      <button class="lightbox-close" id="closeLightbox">Close</button>
+    </div>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <!-- AOS JS for scroll animations -->
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+  <script>
+    AOS.init({
+      duration: 900,
+      once: true,
+      offset: 60
+    });
+
+    const PLACES = [
+      {id:1, name:'Hawa Mahal', type:'Palace', lat:26.9239, lng:75.8267, img:'hawa.avif', desc:'Iconic pink palace with honeycomb-like windows.', bestTime:'Oct - Mar'},
+      {id:2, name:'Amber Fort', type:'Fort', lat:26.9855, lng:75.8513, img:'amer-fort-jaipur.jpg', desc:'Magnificent fort with Rajput architecture and light shows.', bestTime:'Nov - Feb'},
+      {id:3, name:'Jantar Mantar', type:'Observatory', lat:26.9248, lng:75.8267, img:'jantar.webp', desc:'UNESCO observatory with astronomical instruments.', bestTime:'All year'}
+    ];
+
+    const GUIDES = [
+      {name:'Rajesh Sharma', phone:'+91-9876543210', langs:'English, Hindi, Rajasthani', rating:4.9},
+      {name:'Pooja Singh', phone:'+91-9123456780', langs:'English, French', rating:4.7}
+    ];
+
+    // Initialize map at Jaipur
+    const map = L.map('map').setView([26.9124, 75.7873], 12);
+
+    // Load OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Custom marker icon
+    const markerIcon = L.icon({
+      iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png',
+      iconSize: [36, 36],
+      iconAnchor: [18, 36],
+      popupAnchor: [0, -36]
+    });
+
+    const placesDiv = document.getElementById('places');
+    const guidesDiv = document.getElementById('guides');
+
+    function renderPlaces(list) {
+      placesDiv.innerHTML = '';
+      list.forEach(p => {
+        const div = document.createElement('div');
+        div.className = 'place animate__animated animate__fadeInUp';
+        div.innerHTML = `
+          <div class="place-img-container">
+            <img src="${p.img}" alt="${p.name}">
+          </div>
+          <div>
+            <h3>${p.name}</h3>
+            <p>${p.type}</p>
+            <button type="button" onclick="focusPlace(${p.id})">View</button>
+          </div>
+        `;
+        div.onclick = () => showModal(p.id);
+        placesDiv.appendChild(div);
+      });
+    }
+
+    // Animated markers
+    PLACES.forEach(p => {
+      const marker = L.marker([p.lat, p.lng], {icon: markerIcon}).addTo(map)
+        .bindPopup(`<b>${p.name}</b>`)
+        .on('mouseover', function() {
+          this.openPopup();
+        })
+        .on('mouseout', function() {
+          this.closePopup();
+        })
+        .on('click', function() {
+          showModal(p.id);
+        });
+      // Animate marker on add
+      marker._icon.classList.add('animate__animated', 'animate__bounceIn');
+    });
+
+    GUIDES.forEach(g => {
+      const div = document.createElement('div');
+      div.className = 'guide animate__animated animate__fadeInLeft';
+      div.innerHTML = `<h3>${g.name}</h3><p>Languages: ${g.langs}</p><p>Rating: ${g.rating} ★</p><a href="tel:${g.phone}">Call</a>`;
+      guidesDiv.appendChild(div);
+    });
+
+    // Modal logic
+    function focusPlace(id) {
+      const p = PLACES.find(pl => pl.id === id);
+      map.setView([p.lat, p.lng], 15, { animate: true });
+      showModal(id);
+    }
+
+    function showModal(id) {
+      const p = PLACES.find(pl => pl.id===id);
+      document.getElementById('modalTitle').innerText = p.name;
+      document.getElementById('modalImage').src = p.img;
+      document.getElementById('modalDesc').innerText = p.desc;
+      document.getElementById('modalTime').innerText = p.bestTime;
+      document.getElementById('modal').style.display = 'flex';
+      setTimeout(() => {
+        document.querySelector('.modal-content').classList.add('animate__fadeInUp');
+      }, 10);
+    }
+
+    document.getElementById('closeModal').onclick = () => {
+      document.getElementById('modal').style.display = 'none';
+      document.querySelector('.modal-content').classList.remove('animate__fadeInUp');
+    };
+
+    document.getElementById('search').addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase();
+      const filtered = PLACES.filter(p => p.name.toLowerCase().includes(q) || p.type.toLowerCase().includes(q));
+      renderPlaces(filtered);
+    });
+
+    document.getElementById('year').innerText = new Date().getFullYear();
+
+    // Booking form floating labels
+    document.querySelectorAll('.form-group input, .form-group select').forEach(el => {
+      el.addEventListener('blur', function() {
+        if (this.value) {
+          this.classList.add('filled');
+        } else {
+          this.classList.remove('filled');
+        }
+      });
+    });
+
+    document.getElementById('bookingForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      document.getElementById('bookingMsg').innerText = "✅ Booking submitted successfully! We’ll contact you soon.";
+      document.getElementById('bookingMsg').style.opacity = 1;
+      setTimeout(() => {
+        document.getElementById('bookingMsg').style.opacity = 0;
+      }, 3500);
+      e.target.reset();
+    });
+
+    renderPlaces(PLACES);
+
+    // Lightbox for gallery images
+    document.querySelectorAll('.gallery img').forEach(img => {
+      img.addEventListener('click', function() {
+        document.getElementById('lightboxImg').src = this.src;
+        document.getElementById('lightbox').style.display = 'flex';
+      });
+    });
+    document.getElementById('closeLightbox').onclick = function() {
+      document.getElementById('lightbox').style.display = 'none';
+      document.getElementById('lightboxImg').src = '';
+    };
+    document.getElementById('lightbox').onclick = function(e) {
+      if (e.target === this) {
+        document.getElementById('lightbox').style.display = 'none';
+        document.getElementById('lightboxImg').src = '';
+      }
+    };
+  </script>
+  <!-- Animate.css and AOS.js already included above -->
+</body>
+</html>
